@@ -1,0 +1,33 @@
+.nav_container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 100%;
+  z-index: 30;
+  background-color: #0ea5e9;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.12);
+}
+
+.navigation {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.navigation_item {
+  width: 100%;
+  height: 56px;
+  border: none;
+  background-color: transparent;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.navigation_item:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}

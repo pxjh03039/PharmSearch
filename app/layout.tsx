@@ -14,12 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        <Script
-          src={`https://dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAOMAP_KEY}&autoload=false&libraries=services`}
-          strategy="beforeInteractive"
-        />
-      </head>
+      <head></head>
       <body>{children}</body>
     </html>
   );

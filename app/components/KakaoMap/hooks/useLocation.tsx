@@ -1,0 +1,51 @@
+"use client";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+type LatLng = { lat: number; lng: number };
+
+export default function useLocation(initial: LatLng) {
+  const [myGps, setMyGps] = useState<LatLng>(initial);
+  const [mapCenter, setMapCenter] = useState<LatLng>(initial);
+
+  const getMyLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      alert("이 브라우저는 위치 기능을 지원하지 않습니다.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setMyGps({ lat: coords.latitude, lng: coords.longitude });
+        setMapCenter({ lat: coords.latitude, lng: coords.longitude });
+      },
+      (err) => {
+        alert(`내 위치 실패: ${err.message}\nCode: ${err.code}`);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    );
+  }, []);
+
+  const getMapCenter = useMemo(
+    () =>
+      debounce((map: kakao.maps.Map) => {
+        setMapCenter({
+          lat: map.getCenter().getLat(),
+          lng: map.getCenter().getLng(),
+        });
+      }, 500),
+    []
+  );
+
+  useEffect(() => {
+    getMyLocation();
+  }, []);
+
+  return {
+    myGps,
+    setMyGps,
+    mapCenter,
+    setMapCenter,
+    getMyLocation,
+    getMapCenter,
+  };
+}
