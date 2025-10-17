@@ -16,7 +16,7 @@
   transform: translateX(0);
   pointer-events: auto;
 }
-.sidebar_container.closed {
+.sidebar_container.close {
   transform: translateX(-100%);
   box-shadow: none;
 }

@@ -1,11 +1,12 @@
 "use client";
 
+import { ReactNode } from "react";
 import useSidebar from "./common/hooks/useSidebar";
 import KakaoMap from "./components/KakaoMap/index";
 import SideBar from "./components/SideBar";
 import SideNav from "./components/SideNav";
 
-export default function Home() {
+export default function Page() {
   const { open, openSidebar, toggleSidebar } = useSidebar();
   return (
     <div style={{ display: "flex" }}>
