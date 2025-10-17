@@ -9,7 +9,7 @@ import SideNav from "./components/SideNav";
 export default function Page() {
   const { open, openSidebar, toggleSidebar } = useSidebar();
   return (
-    <div style={{ display: "flex" }}>
+    <div className="container">
       <SideNav openSidebar={openSidebar} />
       <SideBar open={open} toggleSidebar={toggleSidebar} />
       <KakaoMap />

@@ -1,5 +1,9 @@
 "use client";
 
+import Ai from "../Ai";
+import Direction from "../Direction";
+import Favorites from "../Favorites";
+import Search from "../Search";
 import "./SideBar.css";
 
 type Props = {
@@ -7,13 +11,13 @@ type Props = {
   toggleSidebar: () => void;
 };
 
-export default function Sidebar({ open, toggleSidebar }: Props) {
+export default function SideBar({ open, toggleSidebar }: Props) {
   return (
     <div className={`sidebar_container ${open ? "open" : "close"}`}>
-      <div>검색</div>
-      <div>Ai</div>
-      <div>길찾</div>
-      <div>검색</div>
+      <Search />
+      <Ai />
+      <Direction />
+      <Favorites />
       <button onClick={toggleSidebar} className="sidebar_toggle_btn">
         {open ? "<" : ">"}
       </button>
