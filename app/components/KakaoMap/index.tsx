@@ -10,10 +10,7 @@ import GpsButton from "@/app/common/components/GpsButton";
 export default function KakaoMap() {
   useKakaoSdkLoader();
 
-  const { myGps, mapCenter, getMyLocation, getMapCenter } = useLocation({
-    lat: 37.55467884,
-    lng: 126.9706069,
-  });
+  const { myGps, mapCenter, getMyLocation, getMapCenter } = useLocation();
 
   return (
     <div className="map_container">

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 
 export default function useSidebar() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState<boolean>(true);
 
   const openSidebar = useCallback(() => setOpen(true), []);
   const closeSidebar = useCallback(() => setOpen(false), []);

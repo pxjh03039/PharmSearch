@@ -1,10 +1,13 @@
 "use client";
+import { LatLng } from "@/app/common/constant";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type LatLng = { lat: number; lng: number };
-
-export default function useLocation(initial: LatLng) {
+export default function useLocation() {
+  const initial = {
+    lat: 37.55467884,
+    lng: 126.9706069,
+  };
   const [myGps, setMyGps] = useState<LatLng>(initial);
   const [mapCenter, setMapCenter] = useState<LatLng>(initial);
 

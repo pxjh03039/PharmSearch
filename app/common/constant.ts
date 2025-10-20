@@ -4,6 +4,8 @@ import Direction from "@/app/components/Direction";
 import Favorites from "@/app/components/Favorites";
 import { ComponentType } from "react";
 
+export type LatLng = { lat: number; lng: number };
+
 export const CONTENTS: { label: string; Component: ComponentType }[] = [
   { label: "검색", Component: Search },
   { label: "AI", Component: Ai },
