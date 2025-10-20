@@ -1,23 +1,40 @@
-import Link from "next/link";
 import "./SideNav.css";
-import { usePathname } from "next/navigation";
-import { TAB } from "../../common/constant";
+import SideBar from "../SideBar";
+import useSidebar from "@/app/common/hooks/useSidebar";
+import { useState } from "react";
+import { CONTENTS } from "@/app/common/constant";
 
-type Props = {
-  openSidebar: () => void;
-};
+export default function SideNav() {
+  const { open, openSidebar, toggleSidebar } = useSidebar();
+  const [selected, setSelected] = useState<string>("검색");
 
-export default function SideNav({ openSidebar }: Props) {
-  const pathname = usePathname();
+  const handleClick = (label: string) => {
+    setSelected(label);
+    openSidebar();
+  };
+
+  const SelectedComponent = CONTENTS.find(
+    (item) => item.label === selected
+  )?.Component;
+
   return (
-    <div className="nav_container">
-      <nav className="navigation">
-        {["검색", "AI", "길찾", "즐찾"].map((icon, i) => (
-          <button key={i} className="navigation_item" onClick={openSidebar}>
-            {icon}
-          </button>
-        ))}
-      </nav>
-    </div>
+    <>
+      <div className="nav_container">
+        <nav className="navigation">
+          {CONTENTS.map(({ label }) => (
+            <button
+              key={label}
+              className="navigation_item"
+              onClick={() => handleClick(label)}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+      </div>
+      <SideBar open={open} toggleSidebar={toggleSidebar}>
+        {SelectedComponent && <SelectedComponent />}
+      </SideBar>
+    </>
   );
 }

@@ -1,23 +1,17 @@
 "use client";
 
-import Ai from "../Ai";
-import Direction from "../Direction";
-import Favorites from "../Favorites";
-import Search from "../Search";
 import "./SideBar.css";
 
 type Props = {
   open: boolean;
   toggleSidebar: () => void;
+  children?: React.ReactNode;
 };
 
-export default function SideBar({ open, toggleSidebar }: Props) {
+export default function SideBar({ open, toggleSidebar, children }: Props) {
   return (
     <div className={`sidebar_container ${open ? "open" : "close"}`}>
-      <Search />
-      <Ai />
-      <Direction />
-      <Favorites />
+      <div className="sidebar_content">{children}</div>
       <button onClick={toggleSidebar} className="sidebar_toggle_btn">
         {open ? "<" : ">"}
       </button>
