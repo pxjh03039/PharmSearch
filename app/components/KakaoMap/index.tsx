@@ -1,16 +1,19 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import useKakaoSdkLoader from "./hooks/useKakaoSdkLoader";
 import "./KakaoMap.css";
+import myGpsImg from "@/app/common/assets/images/myGps.png";
 import GpsButton from "@/app/common/components/GpsButton";
 import { useLocationStore } from "@/stores/useLocationStore";
 import MapSearchButton from "@/app/common/components/MapSearchButton";
 import { useSearchPlaces } from "../Search/hooks/useSearchPlaces";
+import KakaoMarkers from "../KaKaoMarkers";
 
 export default function KakaoMap() {
   useKakaoSdkLoader();
+  const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
   const { myGps, mapCenter, isReady, getMyLocation, getMapCenter } =
     useLocationStore();
@@ -32,12 +35,21 @@ export default function KakaoMap() {
       {isReady && (
         <Map
           className="map"
+          onCreate={setMap}
           center={mapCenter}
           level={3}
           isPanto={true}
           onCenterChanged={getMapCenter}
         >
-          <MapMarker position={myGps} />
+          <MapMarker
+            position={myGps}
+            clickable={false}
+            image={{
+              src: myGpsImg.src,
+              size: { width: 24, height: 24 },
+            }}
+          />
+          <KakaoMarkers map={map} />
         </Map>
       )}
       <GpsButton onClick={getMyLocation} />
