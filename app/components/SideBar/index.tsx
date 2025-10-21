@@ -5,7 +5,7 @@ import "./SideBar.css";
 type Props = {
   open: boolean;
   toggleSidebar: () => void;
-  children?: React.ReactNode;
+  children: React.ReactNode;
 };
 
 export default function SideBar({ open, toggleSidebar, children }: Props) {

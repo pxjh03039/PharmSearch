@@ -10,6 +10,7 @@ export default function useLocation() {
   };
   const [myGps, setMyGps] = useState<LatLng>(initial);
   const [mapCenter, setMapCenter] = useState<LatLng>(initial);
+  const [isReady, setIsReady] = useState(false);
 
   const getMyLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -18,8 +19,10 @@ export default function useLocation() {
     }
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        setMyGps({ lat: coords.latitude, lng: coords.longitude });
-        setMapCenter({ lat: coords.latitude, lng: coords.longitude });
+        const position = { lat: coords.latitude, lng: coords.longitude };
+        setMyGps(position);
+        setMapCenter(position);
+        setIsReady(true);
       },
       (err) => {
         alert(`내 위치 실패: ${err.message}\nCode: ${err.code}`);
@@ -48,6 +51,7 @@ export default function useLocation() {
     setMyGps,
     mapCenter,
     setMapCenter,
+    isReady,
     getMyLocation,
     getMapCenter,
   };

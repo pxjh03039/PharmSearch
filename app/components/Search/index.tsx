@@ -1,29 +1,26 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePharmacies } from "./hooks/usePharmacies";
+import { useSearchPlaces } from "./hooks/useSearchPlaces";
 import "./Search.css";
 import useLocation from "../KakaoMap/hooks/useLocation";
-import { useKeyword } from "./hooks/useKeword";
 
 export default function Search() {
-  const { data, loading, error, getPharmacies } = usePharmacies();
-  const { data2, getKeywords } = useKeyword();
-  const { myGps, mapCenter } = useLocation();
-  const [qurey, setQuery] = useState<string>("");
+  const { data, loading, error, getPlaces } = useSearchPlaces();
+  const { myGps, mapCenter, isReady } = useLocation();
+  const [query, setQuery] = useState<string>("");
 
   useEffect(() => {
-    getPharmacies(myGps);
-  }, []);
+    if (isReady) getPlaces("category", myGps);
+  }, [isReady, myGps]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && qurey.trim()) {
-      getKeywords(qurey, mapCenter);
-      console.log(data2);
+    if (e.key === "Enter") {
+      getPlaces("keyword", mapCenter, query.trim());
     }
   };
 
