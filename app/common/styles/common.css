@@ -14,3 +14,27 @@
   justify-content: center;
   cursor: pointer;
 }
+
+.map-search-btn {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  border: none;
+  background: #0ea5e9;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.map-search-btn:hover {
+  background-color: #1c9ddd;
+}
+
+.map-search-btn:active {
+  transform: translateX(-50%) scale(0.98);
+}
