@@ -44,7 +44,7 @@ export default function useLocation() {
 
   useEffect(() => {
     getMyLocation();
-  }, []);
+  }, [getMyLocation]);
 
   return {
     myGps,

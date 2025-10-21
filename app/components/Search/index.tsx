@@ -14,7 +14,7 @@ export default function Search() {
 
   useEffect(() => {
     if (isReady) getPlaces("category", myGps);
-  }, [isReady]);
+  }, [isReady, myGps, getPlaces]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);

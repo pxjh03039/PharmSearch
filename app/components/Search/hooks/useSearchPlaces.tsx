@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { LatLng } from "@/app/common/constant";
 import { fetchNearbyPharmacies } from "../apis/fetchPharmacies";
 import { fetchKeywordPlaces, KakaoKeywordPlace } from "../apis/fetchKeyword";
