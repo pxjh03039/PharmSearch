@@ -1,24 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePharmacies } from "./hooks/usePharmacies";
 import "./Search.css";
 import useLocation from "../KakaoMap/hooks/useLocation";
+import { useKeyword } from "./hooks/useKeword";
 
 export default function Search() {
   const { data, loading, error, getPharmacies } = usePharmacies();
-  const { myGps } = useLocation();
+  const { data2, getKeywords } = useKeyword();
+  const { myGps, mapCenter } = useLocation();
+  const [qurey, setQuery] = useState<string>("");
 
   useEffect(() => {
     getPharmacies(myGps);
   }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && qurey.trim()) {
+      getKeywords(qurey, mapCenter);
+      console.log(data2);
+    }
+  };
 
   return (
     <div className="search-container">
       <input
         placeholder="검색"
         className="search-input"
-        onKeyDown={(e) => e.key === "Enter" && getPharmacies(myGps)}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
       />
 
       {loading && <p className="status-message">검색 중…</p>}

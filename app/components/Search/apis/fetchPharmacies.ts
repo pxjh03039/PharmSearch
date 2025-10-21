@@ -15,7 +15,11 @@ export type KakaoPlace = {
 
 type KakaoResponse = {
   documents: KakaoPlace[];
-  meta: any;
+  meta: {
+    total_count: number;
+    pageable_count: number;
+    is_end: boolean;
+  };
 };
 
 export async function fetchNearbyPharmacies(
