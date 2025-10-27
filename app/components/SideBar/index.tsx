@@ -1,14 +1,10 @@
 "use client";
 
+import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideBar.css";
 
-type Props = {
-  open: boolean;
-  toggleSidebar: () => void;
-  children: React.ReactNode;
-};
-
-export default function SideBar({ open, toggleSidebar, children }: Props) {
+export default function SideBar({ children }: { children: React.ReactNode }) {
+  const { open, toggleSidebar } = useSidebarStore();
   return (
     <div className={`sidebar_container ${open ? "open" : "close"}`}>
       <div className="sidebar_content">{children}</div>

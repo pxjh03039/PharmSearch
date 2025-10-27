@@ -10,9 +10,11 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import MapSearchButton from "@/app/common/components/MapSearchButton";
 import { useSearchPlaces } from "../Search/hooks/useSearchPlaces";
 import KakaoMarkers from "../KaKaoMarkers";
+import { useSidebarStore } from "@/stores/useSidebarStore";
 
 export default function KakaoMap() {
   useKakaoSdkLoader();
+  const { openSidebar } = useSidebarStore();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
   const { myGps, mapCenter, isReady, getMyLocation, getMapCenter } =
@@ -30,6 +32,7 @@ export default function KakaoMap() {
         mapCenter={mapCenter}
         onClick={() => {
           getPlaces("category", mapCenter);
+          openSidebar();
         }}
       />
       {isReady && (

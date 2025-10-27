@@ -1,40 +1,33 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
-import SideBar from "../SideBar";
-import useSidebar from "@/app/common/hooks/useSidebar";
-import { useState } from "react";
-import { CONTENTS } from "@/app/common/constant";
+import { TABS } from "@/app/common/constant";
 
 export default function SideNav() {
-  const { open, openSidebar, toggleSidebar } = useSidebar();
-  const [selected, setSelected] = useState<string>("검색");
-
-  const handleClick = (label: string) => {
-    setSelected(label);
-    openSidebar();
-  };
-
-  const SelectedComponent = CONTENTS.find(
-    (item) => item.label === selected
-  )?.Component;
+  const pathname = usePathname();
+  const { openSidebar } = useSidebarStore();
 
   return (
-    <>
-      <div className="nav_container">
-        <nav className="navigation">
-          {CONTENTS.map(({ label }) => (
-            <button
-              key={label}
-              className="navigation_item"
-              onClick={() => handleClick(label)}
+    <div className="nav_container">
+      <div className="navigation">
+        {TABS.map((t) => {
+          const active = pathname.startsWith(t.href);
+
+          return (
+            <Link
+              key={t.href}
+              href={t.href}
+              className={`navigation_item ${active ? "active" : ""}`}
+              onClick={openSidebar}
             >
-              {label}
-            </button>
-          ))}
-        </nav>
+              {t.label}
+            </Link>
+          );
+        })}
       </div>
-      <SideBar open={open} toggleSidebar={toggleSidebar}>
-        {SelectedComponent && <SelectedComponent />}
-      </SideBar>
-    </>
+    </div>
   );
 }
