@@ -1,0 +1,159 @@
+:root {
+  --bg-light: #fafafa;
+  --text-light: #111;
+  --border-light: #ddd;
+  --user-bg: #e0f2fe;
+  --model-bg: #fff;
+  --accent: #10b981;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 16px;
+  padding-bottom: 110px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.placeholder-text {
+  text-align: center;
+  color: #666;
+  margin-top: 40px;
+}
+
+.message {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.message.user {
+  flex-direction: row-reverse;
+}
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+.bubble {
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 10px 14px;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.bubble.user {
+  background: var(--user-bg);
+  align-self: flex-end;
+}
+.bubble.model {
+  background: var(--model-bg);
+  align-self: flex-start;
+}
+
+.loading {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ✅ 고정 composer */
+.composer {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  width: calc(100% - 32px);
+  max-width: 800px;
+  display: flex;
+  gap: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+}
+.composer input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: inherit;
+  padding: 8px 4px;
+}
+
+.send-btn,
+.clear-btn {
+  background: none;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.send-btn:hover:not(:disabled),
+.clear-btn:hover {
+  background: #f1f1f1;
+}
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disclaimer {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #666;
+  text-align: center;
+}
