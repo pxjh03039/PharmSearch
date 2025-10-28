@@ -1,5 +1,5 @@
-// app/page.tsx (or your Chat component)
 "use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Send, StopCircle, User, Bot, Trash2 } from "lucide-react";
@@ -13,13 +13,7 @@ export default function ChatUI() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    viewportRef.current?.scrollTo({
-      top: viewportRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages, loading]);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const canSend = useMemo(
     () => input.trim().length > 0 && !loading,
@@ -86,63 +80,62 @@ export default function ChatUI() {
 
   return (
     <div className="chat-container">
-      {/* ✅ 헤더 제거됨 */}
-
-      <main className="chat-main">
-        <div ref={viewportRef} className="chat-messages">
+      <div className="chat-main">
+        <div ref={viewportRef} className="chat-box">
           {messages.length === 0 && (
             <div className="placeholder-text">
-              새 대화를 시작해 보세요. 질문을 입력하고 Enter를 눌러 전송합니다.
+              증상이나 약품에 대해 무엇이든 물어보세요.
             </div>
           )}
 
           {messages.map((m) => (
             <motion.article
               key={m.id}
-              className={`message ${m.role}`}
+              className={`chat-message ${m.role}`}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              <div className={`avatar ${m.role}`}>
-                {m.role === "user" ? <User /> : <Bot />}
-              </div>
-              <div className={`bubble ${m.role}`}>{m.content}</div>
+              <div className={`chat-message-box ${m.role}`}>{m.content}</div>
             </motion.article>
           ))}
 
           {loading && (
-            <div className="loading">
-              <span className="dot" /> 생각 중...
+            <div className="chat-loading">
+              <span className="chat-dot" /> 생각 중...
             </div>
           )}
+          <div ref={bottomRef} />
         </div>
 
-        {/* ✅ textarea → input, ✅ 고정 위치 composer */}
-        <div className="composer">
+        <div className="chat-composer">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="무엇이든 물어보세요… (Enter 전송)"
+            placeholder="무엇이든 물어보세요."
           />
-          <button disabled={!canSend} onClick={onSend} className="send-btn">
+          <button
+            disabled={!canSend}
+            onClick={onSend}
+            className="chat-send-btn"
+          >
             {loading ? (
               <StopCircle className="icon-small" />
             ) : (
               <Send className="icon-small" />
-            )}{" "}
-            {loading ? "중단" : "보내기"}
+            )}
           </button>
-          <button onClick={clearChat} className="clear-btn">
+          {/* <button onClick={clearChat} className="clear-btn">
             <Trash2 className="icon-small" /> Clear
-          </button>
+          </button> */}
         </div>
 
-        <p className="disclaimer">
+        <p className="chat-disclaimer">
           모델 출력은 부정확할 수 있습니다. 중요한 내용은 반드시 검증하세요.
         </p>
-      </main>
+      </div>
     </div>
   );
 }

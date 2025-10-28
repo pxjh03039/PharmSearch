@@ -26,6 +26,14 @@
   overflow-y: auto;
 }
 
+.sidebar_content::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar_content::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
 .sidebar_toggle_btn {
   position: absolute;
   top: 50%;
