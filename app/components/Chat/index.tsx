@@ -1,87 +1,39 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, StopCircle, User, Bot, Trash2 } from "lucide-react";
-import "./Ai.css";
+import { Send, StopCircle } from "lucide-react";
+import "./Chat.css";
+import { useChat } from "./hooks/useChat";
 
-export default function ChatUI() {
-  const [messages, setMessages] = useState<
-    Array<{ id: string; role: "user" | "model"; content: string }>
-  >([]);
-  const [conversationId, setConversationId] = useState("");
+export default function Chat() {
+  const { messages, loading, onSend, clearChat } = useChat();
+
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
 
   const canSend = useMemo(
     () => input.trim().length > 0 && !loading,
     [input, loading]
   );
 
-  async function onSend() {
-    if (!canSend) return;
+  const handleSend = () => {
     const text = input.trim();
+    if (!text) return;
+    onSend(text);
     setInput("");
-
-    const userMsg = {
-      id: crypto.randomUUID(),
-      role: "user" as const,
-      content: text,
-    };
-    setMessages((m) => [...m, userMsg]);
-    setLoading(true);
-
-    try {
-      const resp = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: conversationId || undefined,
-          prompt: text,
-        }),
-      });
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data?.error || "Request failed");
-      if (!conversationId && data.conversationId)
-        setConversationId(data.conversationId);
-
-      const extracted = data?.answer ?? data?.text ?? "";
-      const botMsg = {
-        id: crypto.randomUUID(),
-        role: "model" as const,
-        content: String(extracted),
-      };
-      setMessages((m) => [...m, botMsg]);
-    } catch (e: any) {
-      const botMsg = {
-        id: crypto.randomUUID(),
-        role: "model" as const,
-        content: `❗오류: ${e?.message ?? e}`,
-      };
-      setMessages((m) => [...m, botMsg]);
-    } finally {
-      setLoading(false);
-    }
-  }
+  };
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
       e.preventDefault();
-      onSend();
+      handleSend();
     }
-  }
-
-  function clearChat() {
-    setMessages([]);
-    setConversationId("");
   }
 
   return (
     <div className="chat-container">
       <div className="chat-main">
-        <div ref={viewportRef} className="chat-box">
+        <div className="chat-box">
           {messages.length === 0 && (
             <div className="placeholder-text">
               증상이나 약품에 대해 무엇이든 물어보세요.
@@ -105,7 +57,6 @@ export default function ChatUI() {
               <span className="chat-dot" /> 생각 중...
             </div>
           )}
-          <div ref={bottomRef} />
         </div>
 
         <div className="chat-composer">
@@ -118,7 +69,7 @@ export default function ChatUI() {
           />
           <button
             disabled={!canSend}
-            onClick={onSend}
+            onClick={handleSend}
             className="chat-send-btn"
           >
             {loading ? (

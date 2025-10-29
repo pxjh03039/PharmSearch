@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 타임아웃 제어
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), 20_000);
 
@@ -37,7 +36,6 @@ export async function POST(req: NextRequest) {
         contents: [{ parts: [{ text: prompt }] }],
       }),
       signal: controller.signal,
-      // next: { revalidate: 0 }, // edge 런타임이면 캐시 끄기 옵션 고려
     }).finally(() => clearTimeout(id));
 
     if (!resp.ok) {
@@ -49,7 +47,6 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await resp.json();
-    // Gemini 응답에서 텍스트 추출 (기본 후보 0)
     const text =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ??
       data?.candidates?.[0]?.content?.parts
