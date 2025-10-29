@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { fetchChat } from "../apis/fetchChat";
 
 type Role = "user" | "model";
 type Msg = { id: string; role: Role; content: string };
@@ -25,24 +26,15 @@ export function useChat() {
 
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 20_000);
+
       try {
-        const resp = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            conversationId: conversationId || undefined,
-            prompt: text,
-          }),
-          signal: controller.signal,
-        });
-        const data = await resp.json();
-        if (!resp.ok) throw new Error(data?.error || "Request failed");
+        const data = await fetchChat(conversationId, text, controller.signal);
 
         if (!conversationId && data.conversationId) {
           setConversationId(data.conversationId);
         }
 
-        const extracted = data?.answer ?? data?.text ?? "";
+        const extracted = data.answer ?? data.text ?? "";
         const botMsg: Msg = {
           id: crypto.randomUUID(),
           role: "model",
