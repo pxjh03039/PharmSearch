@@ -1,41 +1,33 @@
 import { useCallback } from "react";
-import { LatLng } from "@/app/common/constant";
-import { fetchNearbyPharmacies } from "../apis/fetchPharmacies";
-import { fetchKeywordPlaces, KakaoKeywordPlace } from "../apis/fetchKeyword";
+import { LatLng, KakaoPlace } from "@/app/common/types/constants";
+import { fetchPharmacies } from "../apis/fetchPharmacies";
+import { fetchKeyword } from "../apis/fetchKeyword";
 import { usePlacesStore } from "@/stores/usePlacesStore";
 
-export type SearchType = "category" | "keyword";
+type SearchType = "category" | "keyword";
 
 export function useSearchPlaces() {
-  const place = usePlacesStore((s) => s.place);
-  const loading = usePlacesStore((s) => s.loading);
-  const error = usePlacesStore((s) => s.error);
-
-  const setData = usePlacesStore((s) => s.setPlace);
-  const setLoading = usePlacesStore((s) => s.setLoading);
-  const setError = usePlacesStore((s) => s.setError);
+  const { place, loading, error, setPlace, setLoading, setError } =
+    usePlacesStore();
 
   const getPlaces = useCallback(
-    async (type: SearchType, gps: LatLng, keyword?: string) => {
+    async (type: SearchType, gps: LatLng, query?: string) => {
       try {
         setLoading(true);
         setError(null);
-        const list: KakaoKeywordPlace[] =
+        const list: KakaoPlace[] =
           type === "category"
-            ? await fetchNearbyPharmacies(gps)
-            : await fetchKeywordPlaces(keyword ?? "", gps);
-
-        setData(
-          list as unknown as ReturnType<typeof usePlacesStore.getState>["place"]
-        );
+            ? await fetchPharmacies(gps)
+            : await fetchKeyword(query!, gps);
+        setPlace(list);
       } catch (e: any) {
-        setError(e?.message ?? "검색 실패");
-        setData([]);
+        setError(e.message ?? "검색 실패) 새로 고침 해보세요.");
+        setPlace([]);
       } finally {
         setLoading(false);
       }
     },
-    [setData, setError, setLoading]
+    [setPlace, setError, setLoading]
   );
 
   return { place, loading, error, getPlaces };
