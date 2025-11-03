@@ -85,9 +85,6 @@ export default function Favorite() {
               </li>
             ))
           )}
-          <button className="favorite-no-login-btn" onClick={() => signOut()}>
-            로그아웃
-          </button>
         </ul>
       )}
     </div>

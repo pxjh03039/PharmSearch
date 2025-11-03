@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
 import { TABS } from "@/app/common/constant";
+import { signOut, useSession } from "next-auth/react";
 
 export default function SideNav() {
   const pathname = usePathname();
   const { openSidebar } = useSidebarStore();
+  const { data: session } = useSession();
 
   return (
     <div className="nav_container">
@@ -27,6 +29,11 @@ export default function SideNav() {
             </Link>
           );
         })}
+        {session && (
+          <button className="navigation-logout" onClick={() => signOut()}>
+            <img src="/Logout.png" alt="logout icon" className="logout-icon" />
+          </button>
+        )}
       </div>
     </div>
   );
