@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import "./Favorite.css";
+import { useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Favorite() {
-  const [testLogin, setTestLogin] = useState<boolean>(false);
+  const { data: session } = useSession();
+  console.log("session in Favorite:", session);
   const testDataEmpty: any = [];
   const testData: any = [
     {
@@ -53,17 +55,22 @@ export default function Favorite() {
 
   return (
     <div className="favorite-container">
-      {!testLogin ? (
+      {!session ? (
         <div className="favorite-no-login">
           로그인 후 이용하실 수 있습니다.
-          <button className="favorite-no-login-btn">로그인</button>
+          <button
+            className="favorite-no-login-btn"
+            onClick={() => signIn("kakao")}
+          >
+            로그인
+          </button>
         </div>
       ) : (
         <ul className="favorite-list">
-          {testData.length === 0 ? (
+          {testDataEmpty.length === 0 ? (
             <div className="favorite-no-data">저장된 관심 장소가 없습니다.</div>
           ) : (
-            testData.map((data: any) => (
+            testDataEmpty.map((data: any) => (
               <li key={data.id} className="favorite-item">
                 <div className="title">{data.place_name}</div>
                 <div className="address">
@@ -78,6 +85,9 @@ export default function Favorite() {
               </li>
             ))
           )}
+          <button className="favorite-no-login-btn" onClick={() => signOut()}>
+            로그아웃
+          </button>
         </ul>
       )}
     </div>
