@@ -4,28 +4,36 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchPlaces } from "./hooks/useSearchPlaces";
 import "./Search.css";
 import { useLocationStore } from "@/stores/useLocationStore";
-import { usePlacesStore } from "@/stores/usePlacesStore";
 
 export default function Search() {
   const { myGps, mapCenter } = useLocationStore();
-  const { place, loading, error, getPlaces } = useSearchPlaces();
   const [query, setQuery] = useState<string>("");
+  const [input, setInput] = useState<string>("");
 
-  useEffect(() => {
-    if (myGps) getPlaces("category", myGps);
-  }, [myGps, getPlaces]);
+  const searchType = query.trim().length > 0 ? "keyword" : "category";
+  const {
+    data: place = [],
+    isLoading,
+    isError,
+    error,
+  } = useSearchPlaces(
+    searchType,
+    searchType === "keyword" ? mapCenter : myGps,
+    query
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    setInput(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const v = input.trim();
     if (e.key === "Enter") {
-      if (query.trim().length === 0) {
+      if (!v) {
         e.preventDefault();
         return;
       }
-      getPlaces("keyword", mapCenter, query.trim());
+      setQuery(v);
     }
   };
 
@@ -38,8 +46,10 @@ export default function Search() {
         onKeyDown={handleKeyDown}
       />
 
-      {loading && <p className="status-message">검색 중…</p>}
-      {error && <p className="status-message error">{error}</p>}
+      {isLoading && <p className="status-message">검색 중…</p>}
+      {isError && (
+        <p className="status-message error">{(error as any)?.message}</p>
+      )}
 
       <ul className="search-results">
         {place.length === 0 ? (
