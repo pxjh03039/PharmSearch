@@ -17,8 +17,7 @@ export default function KakaoMap() {
   const { openSidebar } = useSidebarStore();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
-  const { myGps, mapCenter, isReady, getMyLocation, getMapCenter } =
-    useLocationStore();
+  const { myGps, mapCenter, getMyLocation, getMapCenter } = useLocationStore();
   const { getPlaces } = useSearchPlaces();
 
   useEffect(() => {
@@ -27,15 +26,15 @@ export default function KakaoMap() {
 
   return (
     <div className="map_container">
-      <MapSearchButton
+      {/* <MapSearchButton
         myGps={myGps}
         mapCenter={mapCenter}
         onClick={() => {
           getPlaces("category", mapCenter);
           openSidebar();
         }}
-      />
-      {isReady && (
+      /> */}
+      {myGps && (
         <Map
           className="map"
           onCreate={setMap}

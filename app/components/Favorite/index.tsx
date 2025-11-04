@@ -1,12 +1,10 @@
 "use client";
 
 import "./Favorite.css";
-import { useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Favorite() {
   const { data: session } = useSession();
-  console.log("session in Favorite:", session);
   const testDataEmpty: any = [];
   const testData: any = [
     {

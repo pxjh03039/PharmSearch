@@ -84,7 +84,8 @@ export default function Chat() {
         </div>
 
         <p className="chat-disclaimer">
-          모델 출력은 부정확할 수 있습니다. 중요한 내용은 반드시 검증하세요.
+          이 정보는 의사 진단을 대체하지 않습니다. 중요한 내용은 반드시
+          검증하세요.
         </p>
       </div>
     </div>
