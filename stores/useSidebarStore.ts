@@ -1,22 +1,25 @@
-"use client";
-
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-interface SidebarState {
+type State = {
   open: boolean;
+};
+
+type Action = {
   openSidebar: () => void;
   closeSidebar: () => void;
   toggleSidebar: () => void;
-}
+};
 
-export const useSidebarStore = create<SidebarState>()(
+export const useSidebarStore = create<State & Action>()(
   devtools(
     (set) => ({
       open: true,
-      openSidebar: () => set({ open: true }),
-      closeSidebar: () => set({ open: false }),
-      toggleSidebar: () => set((s) => ({ open: !s.open })),
+
+      openSidebar: () => set({ open: true }, false, "setOpenSidebar"),
+      closeSidebar: () => set({ open: false }, false, "setCloseSidebar"),
+      toggleSidebar: () =>
+        set((s) => ({ open: !s.open }), false, "setToggleSidebar"),
     }),
     { name: "SidebarStore" }
   )

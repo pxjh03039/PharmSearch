@@ -4,14 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
-import { TABS } from "@/app/common/constant";
 import { signOut, useSession } from "next-auth/react";
+
+const TABS = [
+  { href: "/search", label: "검색" },
+  { href: "/chat", label: "챗봇" },
+  { href: "/favorite", label: "즐찾" },
+  { href: "/direction", label: "길찾" },
+];
 
 export default function SideNav() {
   const pathname = usePathname();
   const { openSidebar } = useSidebarStore();
   const { data: session } = useSession();
-
+  console.log(JSON.stringify(session));
   return (
     <div className="nav_container">
       <div className="navigation">

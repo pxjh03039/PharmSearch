@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { debounce } from "lodash";
-import type { LatLng } from "@/app/common/constant";
+import type { LatLng } from "../app/common/types/constants";
 
 const initial: LatLng = { lat: 37.55467884, lng: 126.9706069 };
 
@@ -10,22 +10,22 @@ let debouncedSetCenter: ((map: kakao.maps.Map) => void) | null = null;
 type State = {
   myGps: LatLng;
   mapCenter: LatLng;
-  isReady: boolean;
+};
+
+type Action = {
   setMyGps: (v: LatLng) => void;
   setMapCenter: (v: LatLng) => void;
   getMyLocation: () => void;
   getMapCenter: (map: kakao.maps.Map) => void;
 };
 
-export const useLocationStore = create<State>()(
+export const useLocationStore = create<State & Action>()(
   devtools(
     (set) => ({
       myGps: initial,
       mapCenter: initial,
-      isReady: false,
 
-      setMyGps: (v) =>
-        set({ myGps: v, isReady: true }, false, "location/setMyGps"),
+      setMyGps: (v) => set({ myGps: v }, false, "location/setMyGps"),
       setMapCenter: (v) =>
         set({ mapCenter: v }, false, "location/setMapCenter"),
 
@@ -38,7 +38,7 @@ export const useLocationStore = create<State>()(
         navigator.geolocation.getCurrentPosition(
           ({ coords }) => {
             const position = { lat: coords.latitude, lng: coords.longitude };
-            set({ myGps: position, mapCenter: position, isReady: true });
+            set({ myGps: position, mapCenter: position });
           },
           (err) => {
             alert(`내 위치 실패: ${err.message}\nCode: ${err.code}`);
@@ -59,10 +59,6 @@ export const useLocationStore = create<State>()(
         debouncedSetCenter(map);
       },
     }),
-    {
-      name: "LocationStore",
-      enabled:
-        typeof window !== "undefined" && process.env.NODE_ENV === "development",
-    }
+    { name: "LocationStore" }
   )
 );
