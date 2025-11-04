@@ -1,17 +1,13 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-
-type User = {
-  name: string;
-  email: string;
-} | null;
+import type { User } from "@/app/common/types/constants";
 
 type State = {
-  user: User;
+  user: User | null;
 };
 
 type Action = {
-  setUser: (user: User) => void;
+  setUser: (user: User | null) => void;
   clearUser: () => void;
 };
 

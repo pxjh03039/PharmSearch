@@ -1,5 +1,7 @@
 export type LatLng = { lat: number; lng: number };
 
+export type User = { name: string; email: string };
+
 export type KakaoPlace = {
   address_name: string;
   distance: string;
