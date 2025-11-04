@@ -8,21 +8,20 @@ import myGpsImg from "@/app/common/assets/images/myGps.png";
 import GpsButton from "@/app/common/components/GpsButton";
 import { useLocationStore } from "@/stores/useLocationStore";
 import MapSearchButton from "@/app/common/components/MapSearchButton";
-import { useSearchPlaces } from "../Search/hooks/useSearchPlaces";
 import KakaoMarkers from "../KaKaoMarkers";
 import { useSidebarStore } from "@/stores/useSidebarStore";
+import { useLocation } from "./hooks/useLocation";
 
 export default function KakaoMap() {
   useKakaoSdkLoader();
   const { openSidebar } = useSidebarStore();
+  const { myGps, mapCenter } = useLocationStore();
+  const { getMyLocation, getMapCenter, isReady } = useLocation();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
-
-  const { myGps, mapCenter, getMyLocation, getMapCenter } = useLocationStore();
-  const { getPlaces } = useSearchPlaces();
 
   useEffect(() => {
     getMyLocation();
-  }, [getMyLocation]);
+  }, []);
 
   return (
     <div className="map_container">
@@ -34,17 +33,17 @@ export default function KakaoMap() {
           openSidebar();
         }}
       /> */}
-      {myGps && (
+      {isReady && (
         <Map
           className="map"
           onCreate={setMap}
-          center={mapCenter}
+          center={mapCenter!}
           level={3}
           isPanto={true}
           onCenterChanged={getMapCenter}
         >
           <MapMarker
-            position={myGps}
+            position={myGps!}
             clickable={false}
             image={{
               src: myGpsImg.src,

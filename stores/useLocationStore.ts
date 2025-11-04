@@ -1,63 +1,26 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { debounce } from "lodash";
-import type { LatLng } from "../app/common/types/constants";
-
-const initial: LatLng = { lat: 37.55467884, lng: 126.9706069 };
-
-let debouncedSetCenter: ((map: kakao.maps.Map) => void) | null = null;
+import type { LatLng } from "@/app/common/types/constants";
 
 type State = {
-  myGps: LatLng;
-  mapCenter: LatLng;
+  myGps: LatLng | null;
+  mapCenter: LatLng | null;
 };
 
 type Action = {
-  setMyGps: (v: LatLng) => void;
-  setMapCenter: (v: LatLng) => void;
-  getMyLocation: () => void;
-  getMapCenter: (map: kakao.maps.Map) => void;
+  setMyGps: (v: LatLng | null) => void;
+  setMapCenter: (v: LatLng | null) => void;
 };
 
 export const useLocationStore = create<State & Action>()(
   devtools(
     (set) => ({
-      myGps: initial,
-      mapCenter: initial,
+      myGps: null,
+      mapCenter: null,
 
       setMyGps: (v) => set({ myGps: v }, false, "location/setMyGps"),
       setMapCenter: (v) =>
         set({ mapCenter: v }, false, "location/setMapCenter"),
-
-      // LocationStore를 사용하는 부분은 모두 같은 위치를 참조하므로 로직도 store에 포함
-      getMyLocation: () => {
-        if (!navigator.geolocation) {
-          alert("이 브라우저는 위치 기능을 지원하지 않습니다.");
-          return;
-        }
-        navigator.geolocation.getCurrentPosition(
-          ({ coords }) => {
-            const position = { lat: coords.latitude, lng: coords.longitude };
-            set({ myGps: position, mapCenter: position });
-          },
-          (err) => {
-            alert(`내 위치 실패: ${err.message}\nCode: ${err.code}`);
-          },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
-        );
-      },
-
-      getMapCenter: (map) => {
-        if (!debouncedSetCenter) {
-          debouncedSetCenter = debounce((m: kakao.maps.Map) => {
-            const c = m.getCenter();
-            set({
-              mapCenter: { lat: c.getLat(), lng: c.getLng() },
-            });
-          }, 500);
-        }
-        debouncedSetCenter(map);
-      },
     }),
     { name: "LocationStore" }
   )

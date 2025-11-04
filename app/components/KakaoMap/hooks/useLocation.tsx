@@ -1,58 +1,50 @@
 "use client";
-import { LatLng } from "@/app/common/constant";
+
 import { debounce } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocationStore } from "@/stores/useLocationStore";
+import type { LatLng } from "@/app/common/types/constants";
+import { useMemo } from "react";
 
-export default function useLocation() {
-  const initial = {
-    lat: 37.55467884,
-    lng: 126.9706069,
-  };
-  const [myGps, setMyGps] = useState<LatLng>(initial);
-  const [mapCenter, setMapCenter] = useState<LatLng>(initial);
-  const [isReady, setIsReady] = useState(false);
+let debouncedSetCenter: ((map: kakao.maps.Map) => void) | null = null;
 
-  const getMyLocation = useCallback(() => {
+export function useLocation() {
+  const { myGps, mapCenter, setMyGps, setMapCenter } = useLocationStore();
+
+  const isReady = useMemo(
+    () => !!(myGps?.lat && myGps?.lng && mapCenter?.lat && mapCenter?.lng),
+    [myGps, mapCenter]
+  );
+
+  const getMyLocation = () => {
     if (!navigator.geolocation) {
       alert("이 브라우저는 위치 기능을 지원하지 않습니다.");
       return;
     }
+    console.log("Getting current position...");
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        const position = { lat: coords.latitude, lng: coords.longitude };
-        setMyGps(position);
-        setMapCenter(position);
-        setIsReady(true);
+        const pos: LatLng = { lat: coords.latitude, lng: coords.longitude };
+        setMyGps(pos);
+        setMapCenter(pos);
       },
       (err) => {
-        alert(`내 위치 실패: ${err.message}\nCode: ${err.code}`);
+        alert(`내 위치 불러오기 실패: ${err.message}\nCode: ${err.code}`);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
     );
-  }, []);
-
-  const getMapCenter = useMemo(
-    () =>
-      debounce((map: kakao.maps.Map) => {
-        setMapCenter({
-          lat: map.getCenter().getLat(),
-          lng: map.getCenter().getLng(),
-        });
-      }, 500),
-    []
-  );
-
-  useEffect(() => {
-    getMyLocation();
-  }, [getMyLocation]);
-
-  return {
-    myGps,
-    setMyGps,
-    mapCenter,
-    setMapCenter,
-    isReady,
-    getMyLocation,
-    getMapCenter,
   };
+
+  const getMapCenter = (map: kakao.maps.Map) => {
+    if (!debouncedSetCenter) {
+      debouncedSetCenter = debounce((coords: kakao.maps.Map) => {
+        const pos: LatLng = {
+          lat: coords.getCenter().getLat(),
+          lng: coords.getCenter().getLng(),
+        };
+        setMapCenter(pos);
+      }, 500);
+    }
+    debouncedSetCenter(map);
+  };
+  return { getMyLocation, getMapCenter, isReady };
 }

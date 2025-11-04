@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { useSearchPlaces } from "./hooks/useSearchPlaces";
 import "./Search.css";
 import { useLocationStore } from "@/stores/useLocationStore";
@@ -12,13 +12,13 @@ export default function Search() {
 
   const searchType = query.trim().length > 0 ? "keyword" : "category";
   const {
-    data: place = [],
+    data = [],
     isLoading,
     isError,
     error,
   } = useSearchPlaces(
     searchType,
-    searchType === "keyword" ? mapCenter : myGps,
+    searchType === "keyword" ? mapCenter! : myGps!,
     query
   );
 
@@ -52,10 +52,10 @@ export default function Search() {
       )}
 
       <ul className="search-results">
-        {place.length === 0 ? (
+        {data.length === 0 ? (
           <p className="no-result">검색결과가 없습니다.</p>
         ) : (
-          place.map((p) => (
+          data.map((p) => (
             <li key={p.id} className="search-item">
               <div className="title">{p.place_name}</div>
               <div className="address">
