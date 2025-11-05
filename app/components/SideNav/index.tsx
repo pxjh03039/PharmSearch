@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
 import { signOut, useSession } from "next-auth/react";
+import useModal from "../Modal/hooks/useModal";
+import { Modal } from "../Modal";
+import Logout from "../Logout";
 
 const TABS = [
   { href: "/search", label: "검색" },
@@ -16,8 +19,9 @@ const TABS = [
 export default function SideNav() {
   const pathname = usePathname();
   const { openSidebar } = useSidebarStore();
+  const { isModalOpen, openModal, closeModal } = useModal();
   const { data: session } = useSession();
-  console.log(JSON.stringify(session));
+
   return (
     <div className="nav_container">
       <div className="navigation">
@@ -36,9 +40,18 @@ export default function SideNav() {
           );
         })}
         {session && (
-          <button className="navigation-logout" onClick={() => signOut()}>
-            <img src="/Logout.png" alt="logout icon" className="logout-icon" />
-          </button>
+          <>
+            <button className="navigation-logout" onClick={openModal}>
+              <img
+                src="/Logout.png"
+                alt="logout icon"
+                className="logout-icon"
+              />
+            </button>
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <Logout onClose={closeModal} />
+            </Modal>
+          </>
         )}
       </div>
     </div>

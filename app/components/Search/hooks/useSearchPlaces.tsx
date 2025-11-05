@@ -17,7 +17,7 @@ export function useSearchPlaces(type: SearchType, gps: LatLng, query?: string) {
     placeholderData: (prev) => prev,
     enabled: !!query?.trim() || type === "category",
   });
-  console.log(JSON.stringify(result));
+
   useEffect(() => {
     if (result.data) setPlace(result.data);
   }, [result.data, setPlace]);

@@ -4,11 +4,17 @@ import { useState } from "react";
 import { useSearchPlaces } from "./hooks/useSearchPlaces";
 import "./Search.css";
 import { useLocationStore } from "@/stores/useLocationStore";
+import useModal from "../Modal/hooks/useModal";
+import { Modal } from "../Modal";
+import { KakaoPlace } from "@/app/common/types/constants";
+import SearchDetail from "../SearchDetail";
 
 export default function Search() {
   const { myGps, mapCenter } = useLocationStore();
+  const { isModalOpen, openModal, closeModal } = useModal();
   const [query, setQuery] = useState<string>("");
   const [input, setInput] = useState<string>("");
+  const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
 
   const searchType = query.trim().length > 0 ? "keyword" : "category";
   const {
@@ -37,6 +43,11 @@ export default function Search() {
     }
   };
 
+  const handleListItemClick = (place: KakaoPlace) => {
+    setSelectedPlace(place);
+    openModal();
+  };
+
   return (
     <div className="search-container">
       <input
@@ -56,7 +67,11 @@ export default function Search() {
           <p className="no-result">검색결과가 없습니다.</p>
         ) : (
           data.map((p) => (
-            <li key={p.id} className="search-item">
+            <li
+              key={p.id}
+              className="search-item"
+              onClick={() => handleListItemClick(p)}
+            >
               <div className="title">{p.place_name}</div>
               <div className="address">
                 {p.road_address_name || p.address_name}
@@ -69,6 +84,15 @@ export default function Search() {
           ))
         )}
       </ul>
+      {isModalOpen && selectedPlace && (
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <SearchDetail
+            key={selectedPlace.id}
+            selectedPlace={selectedPlace}
+            onClose={closeModal}
+          />
+        </Modal>
+      )}
     </div>
   );
 }
