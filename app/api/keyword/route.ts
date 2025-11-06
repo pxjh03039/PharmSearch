@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   url.searchParams.set("sort", "distance");
 
   const response = await fetch(url.toString(), {
-    headers: { Authorization: `KakaoAK ${process.env.REST_API_KEY}` },
+    headers: { Authorization: `KakaoAK ${process.env.KAKAO_CLIENT_ID}` },
     cache: "no-store",
   });
 

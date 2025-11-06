@@ -4,7 +4,7 @@ import KakaoProvider from "next-auth/providers/kakao";
 const handler = NextAuth({
   providers: [
     KakaoProvider({
-      clientId: process.env.REST_API_KEY!,
+      clientId: process.env.KAKAO_CLIENT_ID!,
       clientSecret: process.env.CLIENT_SECRET!,
     }),
   ],
