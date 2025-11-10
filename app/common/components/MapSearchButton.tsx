@@ -1,7 +1,7 @@
 "use client";
 
 import "../styles/common.css";
-import { LatLng } from "../constant";
+import { LatLng } from "../types/constants";
 
 type Props = { myGps: LatLng; mapCenter: LatLng; onClick?: () => void };
 
