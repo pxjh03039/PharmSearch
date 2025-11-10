@@ -22,7 +22,9 @@ export default function Favorite() {
       ) : (
         <ul className="favorite-list">
           {favoriteList.length === 0 ? (
-            <div className="favorite-no-data">저장된 관심 장소가 없습니다.</div>
+            <div className="favorite-no-data">
+              {session.user?.name}님 저장된 관심 장소가 없습니다.
+            </div>
           ) : (
             favoriteList.map((data: any) => (
               <li key={data.id} className="favorite-item">
