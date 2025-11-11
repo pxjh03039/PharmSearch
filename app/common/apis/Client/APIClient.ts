@@ -58,10 +58,10 @@ export default class APIClient {
       });
 
       if (!response.ok) {
+        const errorText = await response.text();
         throw new HTTPError(
-          `에러 발생 (url: ${url}, status: ${
-            response.status
-          }) - ${await response.text()}`,
+          `에러 발생 (url: ${url})\n
+           내용: ${errorText} (${response.status})`,
           response.status
         );
       }

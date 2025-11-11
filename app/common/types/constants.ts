@@ -22,3 +22,13 @@ export type KakaoPlaceResponse = {
     is_end: boolean;
   };
 };
+
+export type FavoritePlace = {
+  placeId: string;
+  title: string;
+  address: string;
+  lat: number;
+  lng: number;
+  place_url?: string | null;
+  phone?: string | null;
+};

@@ -1,8 +1,9 @@
 import { LatLng } from "@/app/common/types/constants";
 
-const API_ROUTES = {
+export const API_ROUTES = {
   pharmacies: "/api/pharmacies",
   keyword: "/api/keyword",
+  favorite: "/api/favorite",
 } as const;
 
 export const pathGenerator = {

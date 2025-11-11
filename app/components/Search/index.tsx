@@ -8,6 +8,7 @@ import useModal from "../Modal/hooks/useModal";
 import { Modal } from "../Modal";
 import { KakaoPlace } from "@/app/common/types/constants";
 import SearchDetail from "../SearchDetail";
+import GlobalSkeleton from "@/app/common/components/GlobalSkeleton";
 
 export default function Search() {
   const { myGps, mapCenter } = useLocationStore();
@@ -57,7 +58,7 @@ export default function Search() {
         onKeyDown={handleKeyDown}
       />
 
-      {isLoading && <p className="status-message">검색 중…</p>}
+      {isLoading && <GlobalSkeleton length={6} />}
       {isError && (
         <p className="status-message error">{(error as any)?.message}</p>
       )}

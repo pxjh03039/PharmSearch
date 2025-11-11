@@ -3,25 +3,65 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import prisma from "@/app/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { HTTP_STATUS_CODE } from "@/app/common/apis/constants/http";
+
+export async function GET() {
+  const SESSION = await getServerSession(authOptions);
+  const EMAIL = SESSION?.user?.email;
+  try {
+    if (!EMAIL) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: EMAIL },
+      include: { favorites: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
+    }
+
+    return NextResponse.json(user.favorites);
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR }
+    );
+  }
+}
 
 export async function POST(req: Request) {
+  const SESSION = await getServerSession(authOptions);
+  const EMAIL = SESSION?.user?.email;
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!EMAIL) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
     }
 
     const body = await req.json();
 
-    // 1️⃣ 해당 유저 찾기
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: EMAIL },
     });
+
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
     }
 
-    // 2️⃣ 중복 검사 (같은 placeId가 이미 있는지)
     const existing = await prisma.favorite.findFirst({
       where: {
         userId: user.id,
@@ -32,11 +72,10 @@ export async function POST(req: Request) {
     if (existing) {
       return NextResponse.json(
         { message: "이미 즐겨찾기에 추가된 장소입니다." },
-        { status: 409 } // Conflict
+        { status: HTTP_STATUS_CODE.CONFLICT }
       );
     }
 
-    // 3️⃣ 중복이 없으면 새로 생성
     const favorite = await prisma.favorite.create({
       data: {
         user: { connect: { id: user.id } },
@@ -55,57 +94,40 @@ export async function POST(req: Request) {
     console.error("Error saving favorite:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET() {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // 로그인된 사용자 찾기
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      include: { favorites: true }, // ✅ 즐겨찾기 같이 불러오기
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(user.favorites);
-  } catch (error) {
-    console.error("Error fetching favorites:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
+      { status: HTTP_STATUS_CODE.INTERNAL_SERVER_ERROR }
     );
   }
 }
 
 export async function DELETE(req: Request) {
+  const SESSION = await getServerSession(authOptions);
+  const EMAIL = SESSION?.user?.email;
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!EMAIL) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
     }
 
     const { placeId } = await req.json();
 
     if (!placeId) {
-      return NextResponse.json({ error: "Missing placeId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing placeId" },
+        { status: HTTP_STATUS_CODE.BAD_REQUEST }
+      );
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: EMAIL },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: HTTP_STATUS_CODE.UNAUTHORIZED }
+      );
     }
 
     const deleted = await prisma.favorite.deleteMany({
@@ -115,7 +137,7 @@ export async function DELETE(req: Request) {
     if (deleted.count === 0) {
       return NextResponse.json(
         { message: "삭제할 즐겨찾기를 찾을 수 없습니다." },
-        { status: 404 }
+        { status: HTTP_STATUS_CODE.CONFLICT }
       );
     }
 
