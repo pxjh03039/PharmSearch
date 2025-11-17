@@ -4,6 +4,7 @@ import { debounce } from "lodash";
 import { useLocationStore } from "@/stores/useLocationStore";
 import type { LatLng } from "@/app/common/types/constants";
 import { useMemo } from "react";
+import { Geolocation } from "@capacitor/geolocation";
 
 let debouncedSetCenter: ((map: kakao.maps.Map) => void) | null = null;
 
@@ -16,22 +17,23 @@ export function useLocation() {
   );
 
   const getMyLocation = () => {
-    if (!navigator.geolocation) {
-      alert("이 브라우저는 위치 기능을 지원하지 않습니다.");
-      return;
-    }
-    console.log("Getting current position...");
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
+    (async () => {
+      try {
+        await Geolocation.requestPermissions();
+
+        const { coords } = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 30000,
+        });
+
         const pos: LatLng = { lat: coords.latitude, lng: coords.longitude };
         setMyGps(pos);
         setMapCenter(pos);
-      },
-      (err) => {
-        alert(`내 위치 불러오기 실패: ${err.message}\nCode: ${err.code}`);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
-    );
+      } catch (err: any) {
+        alert(`내 위치 불러오기 실패: ${err?.message ?? err}\n`);
+      }
+    })();
   };
 
   const getMapCenter = (map: kakao.maps.Map) => {
@@ -46,5 +48,6 @@ export function useLocation() {
     }
     debouncedSetCenter(map);
   };
-  return { getMyLocation, getMapCenter, isReady };
+
+  return { myGps, mapCenter, getMyLocation, getMapCenter, isReady };
 }

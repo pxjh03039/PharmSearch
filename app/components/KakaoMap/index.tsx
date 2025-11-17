@@ -15,8 +15,8 @@ import { useLocation } from "./hooks/useLocation";
 export default function KakaoMap() {
   useKakaoSdkLoader();
   const { openSidebar } = useSidebarStore();
-  const { myGps, mapCenter } = useLocationStore();
-  const { getMyLocation, getMapCenter, isReady } = useLocation();
+  const { getMyLocation, getMapCenter, isReady, myGps, mapCenter } =
+    useLocation();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
   useEffect(() => {
