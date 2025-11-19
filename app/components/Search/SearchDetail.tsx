@@ -1,7 +1,7 @@
 "use client";
 
 import { KakaoPlace } from "@/app/common/types/constants";
-import "./SearchDetail.css";
+import "./Search.css";
 
 type Props = {
   selectedPlace: KakaoPlace;

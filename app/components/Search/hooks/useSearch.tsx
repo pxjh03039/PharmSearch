@@ -2,12 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPharmacies } from "../apis/fetchPharmacies";
 import { fetchKeyword } from "../apis/fetchKeyword";
 import { LatLng } from "@/app/common/types/constants";
-import { usePlacesStore } from "@/stores/usePlacesStore";
 import { useEffect } from "react";
+import { usePlacesStore } from "@/stores/usePlacesStore";
 
 type SearchType = "category" | "keyword";
 
-export function useSearchPlaces(type: SearchType, gps: LatLng, query?: string) {
+export function useSearch(type: SearchType, gps: LatLng, query?: string) {
   const { setPlace } = usePlacesStore();
 
   const result = useQuery({
@@ -19,7 +19,9 @@ export function useSearchPlaces(type: SearchType, gps: LatLng, query?: string) {
   });
 
   useEffect(() => {
-    if (result.data) setPlace(result.data);
+    if (result.data) {
+      setPlace(result.data);
+    }
   }, [result.data, setPlace]);
 
   return result;

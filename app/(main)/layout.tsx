@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
+import "../common/styles/common.css";
 import SideNav from "../components/SideNav";
 import SideBar from "../components/SideBar";
-import KakaoMap from "../components/KakaoMap";
-import "../common/styles/common.css";
+import MapComponents from "../components/KakaoMap/MapComponents";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <div className="container">
       <SideNav />
       <SideBar>{children}</SideBar>
-      <KakaoMap />
+      <MapComponents />
     </div>
   );
 }

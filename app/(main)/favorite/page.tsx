@@ -11,13 +11,13 @@ export default function FavoritePage() {
   const { data: session } = useSession();
   const { favoriteList, isLoading, removeFavorite } = useFavorites(session);
 
+  const isFavoriteList = favoriteList && favoriteList.length > 0;
+
   return (
     <div className="favorite-container">
       {!session ? (
         <FavoriteLogin signIn={signIn} />
-      ) : isLoading ? (
-        <GlobalSkeleton length={7} />
-      ) : favoriteList && favoriteList.length > 0 ? (
+      ) : isLoading ? null : isFavoriteList ? (
         <FavoriteList favoriteList={favoriteList} onDelete={removeFavorite} />
       ) : (
         <EmptyFavorite />

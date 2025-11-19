@@ -14,7 +14,7 @@ type Action = {
 export const useSidebarStore = create<State & Action>()(
   devtools(
     (set) => ({
-      open: true,
+      open: false,
 
       openSidebar: () => set({ open: true }, false, "setOpenSidebar"),
       closeSidebar: () => set({ open: false }, false, "setCloseSidebar"),

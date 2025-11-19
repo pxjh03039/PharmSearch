@@ -3,77 +3,101 @@
 import { debounce } from "lodash";
 import { useLocationStore } from "@/stores/useLocationStore";
 import type { LatLng } from "@/app/common/types/constants";
-import { useMemo } from "react";
+import { useCallback, useRef, useEffect, useMemo } from "react";
 import { Geolocation } from "@capacitor/geolocation";
 import { Capacitor } from "@capacitor/core";
 
-let debouncedSetCenter: ((map: kakao.maps.Map) => void) | null = null;
+const DEBOUNCE_DELAY = 500;
+const GEOLOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 30000,
+};
 
 export function useLocation() {
-  const { myGps, mapCenter, setMyGps, setMapCenter } = useLocationStore();
+  const { setMyGps, setMapCenter } = useLocationStore();
 
-  const isReady = useMemo(
-    () => !!(myGps?.lat && myGps?.lng && mapCenter?.lat && mapCenter?.lng),
-    [myGps, mapCenter]
+  const debouncedSetCenterRef = useRef<ReturnType<typeof debounce> | null>(
+    null
   );
 
-  const getMyLocation = () => {
-    // 1) 웹에서는 navigator.geolocation 사용
-    if (Capacitor.getPlatform() === "web") {
-      if (!navigator.geolocation) {
-        alert("이 브라우저는 위치 기능을 지원하지 않습니다.");
-        return;
-      }
+  // 디바운스된 맵 센터 업데이트 초기화
+  useEffect(() => {
+    debouncedSetCenterRef.current = debounce((map: kakao.maps.Map) => {
+      const center = map.getCenter();
+      setMapCenter({
+        lat: center.getLat(),
+        lng: center.getLng(),
+      });
+    }, DEBOUNCE_DELAY);
 
+    return () => {
+      debouncedSetCenterRef.current?.cancel();
+    };
+  }, [setMapCenter]);
+
+  // 웹 브라우저에서 위치 가져오기
+  const getWebLocation = useCallback(async (): Promise<LatLng> => {
+    if (!navigator.geolocation) {
+      throw new Error("이 브라우저는 위치 기능을 지원하지 않습니다.");
+    }
+
+    return new Promise<LatLng>((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         ({ coords }) => {
-          const pos: LatLng = {
+          resolve({
             lat: coords.latitude,
             lng: coords.longitude,
-          };
-          setMyGps(pos);
-          setMapCenter(pos);
+          });
         },
         (err) => {
-          alert(`내 위치 불러오기 실패: ${err.message}\nCode: ${err.code}`);
+          reject(
+            new Error(`위치 불러오기 실패: ${err.message} (Code: ${err.code})`)
+          );
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+        GEOLOCATION_OPTIONS
       );
-      return;
+    });
+  }, []);
+
+  // 네이티브 앱에서 위치 가져오기
+  const getNativeLocation = useCallback(async (): Promise<LatLng> => {
+    await Geolocation.requestPermissions();
+    const { coords } = await Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0,
+    });
+    return {
+      lat: coords.latitude,
+      lng: coords.longitude,
+    };
+  }, []);
+
+  // 내 위치 가져오기
+  const getMyLocation = useCallback(async () => {
+    try {
+      const isWeb = Capacitor.getPlatform() === "web";
+      const pos = isWeb ? await getWebLocation() : await getNativeLocation();
+
+      setMyGps(pos);
+      setMapCenter(pos);
+      return pos;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "알 수 없는 오류";
+      console.error("[useLocation] 위치 가져오기 실패:", message);
+      throw error;
     }
+  }, [setMyGps, setMapCenter]);
 
-    // 2) 네이티브(Capacitor)에서는 플러그인 사용
-    (async () => {
-      try {
-        await Geolocation.requestPermissions();
+  // 맵 센터 가져오기
+  const getMapCenter = useCallback((map: kakao.maps.Map) => {
+    debouncedSetCenterRef.current?.(map);
+  }, []);
 
-        const { coords } = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 0,
-        });
-
-        const pos: LatLng = { lat: coords.latitude, lng: coords.longitude };
-        setMyGps(pos);
-        setMapCenter(pos);
-      } catch (err: any) {
-        alert(`내 위치 불러오기 실패: ${err?.message ?? err}\n`);
-      }
-    })();
+  return {
+    getMyLocation,
+    getMapCenter,
   };
-
-  const getMapCenter = (map: kakao.maps.Map) => {
-    if (!debouncedSetCenter) {
-      debouncedSetCenter = debounce((coords: kakao.maps.Map) => {
-        const pos: LatLng = {
-          lat: coords.getCenter().getLat(),
-          lng: coords.getCenter().getLng(),
-        };
-        setMapCenter(pos);
-      }, 500);
-    }
-    debouncedSetCenter(map);
-  };
-
-  return { myGps, mapCenter, getMyLocation, getMapCenter, isReady };
 }

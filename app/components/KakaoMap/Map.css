@@ -1,0 +1,166 @@
+.map-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Map */
+.map {
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+}
+/* Map */
+
+/* Map Loading */
+.map-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 0.5rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* Map Loading */
+
+/* Map Error */
+.map-error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-icon {
+  font-size: 3rem;
+}
+
+.map-error h3 {
+  margin: 0;
+  color: #dc2626;
+}
+
+.map-error p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.retry-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.retry-button:hover {
+  background: #2563eb;
+}
+/* Map Error */
+
+/* Map GPS Error */
+.gps-error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+  max-width: 400px;
+}
+
+.gps-error-icon {
+  font-size: 4rem;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.gps-error h3 {
+  margin: 0;
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.gps-error-description {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.gps-error-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.gps-retry-button,
+.gps-reload-button {
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.gps-retry-button {
+  background: #3b82f6;
+  color: white;
+}
+
+.gps-retry-button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.gps-reload-button {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.gps-reload-button:hover {
+  background: #d1d5db;
+}
+
+.gps-error-hint {
+  margin: 0;
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: #f3f4f6;
+  border-radius: 0.375rem;
+  color: #6b7280;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-align: left;
+}
+/* Map GPS Error */
