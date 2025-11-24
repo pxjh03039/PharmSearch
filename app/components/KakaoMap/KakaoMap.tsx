@@ -6,7 +6,7 @@ import "./Map.css";
 import myGpsImg from "@/app/common/assets/images/myGps.png";
 import GpsButton from "@/app/common/components/GpsButton";
 import MapMarkers from "./MapMarkers";
-import { useSearch } from "../Search/hooks/useSearch";
+import { useSearchPharmacies } from "../Search/hooks/useSearchPharmacies";
 import { LatLng } from "@/app/common/types/constants";
 import { useLocationStore } from "@/stores/useLocationStore";
 
@@ -19,7 +19,7 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
   const { myGps, mapCenter } = useLocationStore();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
 
-  useSearch("category", myGps!);
+  useSearchPharmacies(myGps!);
 
   return (
     <div className="map-container">

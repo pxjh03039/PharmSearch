@@ -23,18 +23,7 @@ export default function FavoriteList({ favoriteList, onDelete }: Props) {
             </button>
           </div>
           <div className="address">{item.address}</div>
-          <div className="address">{item.phone ? ` ${item.phone}` : "-"}</div>
-          <div className="address">
-            {item.place_url && (
-              <a
-                href={item.place_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                장소보기
-              </a>
-            )}
-          </div>
+          <div className="phone">{item.phone ? ` ${item.phone}` : "-"}</div>
         </li>
       ))}
     </ul>

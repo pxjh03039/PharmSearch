@@ -19,7 +19,6 @@ export default function SearchHeader({ onSearch }: Props) {
     if (e.key === "Enter") {
       if (!value) {
         e.preventDefault();
-        return;
       }
       onSearch(value);
     }
