@@ -6,12 +6,9 @@ import {
 import mainClient from "@/app/common/apis/Client/mainClient";
 import { pathGenerator } from "@/app/common/apis/constants/routes";
 
-export async function fetchKeyword(
-  query: string,
-  gps: LatLng
-): Promise<KakaoPlace[]> {
+export async function fetchKeyword(query: string): Promise<KakaoPlace[]> {
   const res = await mainClient.get<KakaoPlaceResponse>(
-    pathGenerator.keyword(query, gps)
+    pathGenerator.keyword(query)
   );
 
   return res.documents;

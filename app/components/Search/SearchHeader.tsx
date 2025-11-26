@@ -1,36 +1,54 @@
 "use client";
 
-import { useState } from "react";
-import "./Search.css";
+import { useRef } from "react";
+import { useSearchInput } from "./hooks/useSearchInput";
+import { useClickOutside } from "./hooks/useClickOutside";
+import { KakaoPlace } from "@/app/common/types/constants";
 
 type Props = {
-  onSearch: (query: string) => void;
+  onSearch: (place: KakaoPlace | null) => void;
 };
 
 export default function SearchHeader({ onSearch }: Props) {
-  const [input, setInput] = useState<string>("");
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
+  const {
+    input,
+    suggestions,
+    hasSuggestions,
+    handleChange,
+    handleKeyDown,
+    handleSuggestionClick,
+    handleFocus,
+    setShowAutoComplete,
+  } = useSearchInput({ onSearch });
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const value = input.trim();
-    if (e.key === "Enter") {
-      if (!value) {
-        e.preventDefault();
-      }
-      onSearch(value);
-    }
-  };
+  useClickOutside(containerRef, () => setShowAutoComplete(false));
 
   return (
-    <input
-      value={input}
-      placeholder="검색"
-      className="search-input"
-      onChange={handleInputChange}
-      onKeyDown={handleKeyDown}
-    />
+    <div ref={containerRef} className="search-header-container">
+      <input
+        value={input}
+        placeholder="검색"
+        className="search-header-input"
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        onFocus={handleFocus}
+      />
+
+      {hasSuggestions && suggestions && (
+        <ul className="search-header-suggestion">
+          {suggestions.slice(0, 10).map((suggestion, index) => (
+            <li
+              key={suggestion.id || index}
+              className="search-header-suggestion-item"
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              {suggestion.place_name}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

@@ -13,7 +13,8 @@ import { useState } from "react";
 export default function FavoritePage() {
   const { data: session } = useSession();
   const { isModalOpen, openModal, closeModal } = useModal();
-  const { favoriteList, isLoading, removeFavorite } = useFavorites(session);
+  const { favoriteList, isLoading, removeFavorite, isPending } =
+    useFavorites(session);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string>("");
 
   const isFavoriteList = favoriteList && favoriteList.length > 0;
@@ -32,12 +33,12 @@ export default function FavoritePage() {
     <div className="favorite-container">
       {!session ? (
         <FavoriteLogin signIn={signIn} />
-      ) : isLoading ? (
+      ) : isLoading || isPending ? (
         <FavoriteLoading />
       ) : isFavoriteList ? (
         <FavoriteList
           favoriteList={favoriteList}
-          onDelete={handleDeleteClick} // removeFavorite 대신 handleDeleteClick 전달
+          onDelete={handleDeleteClick}
         />
       ) : (
         <EmptyFavorite />
@@ -59,7 +60,7 @@ export default function FavoritePage() {
               <button className="btn btn-primary" onClick={handleConfirmDelete}>
                 확인
               </button>
-              <button className="btn" onClick={closeModal}>
+              <button className="btn" onClick={closeModal} disabled={isPending}>
                 취소
               </button>
             </div>

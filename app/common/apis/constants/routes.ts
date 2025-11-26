@@ -12,9 +12,8 @@ export const API_ROUTES = {
 export const pathGenerator = {
   pharmacies: (gps: LatLng) =>
     `${API_ROUTES.pharmacies}?x=${gps.lng}&y=${gps.lat}`,
-  keyword: (query: string, gps: LatLng) =>
-    `${API_ROUTES.keyword}?query=${encodeURIComponent(query)}&x=${gps.lng}&y=${
-      gps.lat
+  keyword: (query: string) =>
+    `${API_ROUTES.keyword}?query=${encodeURIComponent(query)}
     }`,
   direction: (origin: LatLng, destination: LatLng) =>
     `${API_ROUTES.direction}?origin=${origin.lng},${origin.lat}&destination=${destination.lng},${destination.lat}`,
