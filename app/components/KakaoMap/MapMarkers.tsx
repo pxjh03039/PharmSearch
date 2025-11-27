@@ -3,9 +3,8 @@ import { usePlacesStore } from "@/stores/usePlacesStore";
 import { useEffect, useState } from "react";
 import GpsImg from "@/app/common/assets/images/Gps.png";
 import { KakaoPlace } from "@/app/common/types/constants";
-import useModal from "../Modal/hooks/useModal";
-import { Modal } from "../Modal";
 import SearchDetail from "../Search/SearchDetail";
+import { useModalStore } from "@/stores/useModalStore";
 
 type MapMarkersProps = {
   map: kakao.maps.Map;
@@ -13,7 +12,7 @@ type MapMarkersProps = {
 
 export default function MapMarkers({ map }: MapMarkersProps) {
   const { place: placeList } = usePlacesStore();
-  const { isModalOpen, openModal, closeModal } = useModal();
+  const { openModal, closeModal } = useModalStore();
   const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
   const bounds = new kakao.maps.LatLngBounds();
 
@@ -35,7 +34,13 @@ export default function MapMarkers({ map }: MapMarkersProps) {
     const { lat, lng } = convertToLatLng(selected);
     map.panTo(new kakao.maps.LatLng(lat, lng));
     setSelectedPlace(selected);
-    openModal();
+    openModal(
+      <SearchDetail
+        key={selected.id}
+        selectedPlace={selected}
+        onClose={closeModal}
+      />
+    );
   };
 
   return (
@@ -56,15 +61,6 @@ export default function MapMarkers({ map }: MapMarkersProps) {
           />
         );
       })}
-      {isModalOpen && selectedPlace && (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <SearchDetail
-            key={selectedPlace.id}
-            selectedPlace={selectedPlace}
-            onClose={closeModal}
-          />
-        </Modal>
-      )}
     </>
   );
 }

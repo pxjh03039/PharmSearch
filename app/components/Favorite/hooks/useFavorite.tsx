@@ -16,14 +16,22 @@ export function useFavorites(session: Session | null) {
     enabled: !!session,
   });
 
-  const { mutate: addFavorite, isPending: isAdding } = useMutation({
+  const {
+    mutate: addFavorite,
+    isPending: isAdding,
+    isError: isAddError,
+  } = useMutation({
     mutationFn: fetchPostFavorites,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
     },
   });
 
-  const { mutate: removeFavorite, isPending: isRemoving } = useMutation({
+  const {
+    mutate: removeFavorite,
+    isPending: isRemoving,
+    isError: isRemoveError,
+  } = useMutation({
     mutationFn: fetchDeleteFavorites,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
@@ -35,7 +43,9 @@ export function useFavorites(session: Session | null) {
     isLoading,
     addFavorite,
     isAdding,
+    isAddError,
     removeFavorite,
     isRemoving,
+    isRemoveError,
   };
 }

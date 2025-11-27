@@ -44,3 +44,36 @@
 .map-search-btn:active {
   transform: translateX(-50%) scale(0.98);
 }
+
+/* Global Loading */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(0.5px); /* 블러 효과 (선택사항) */
+  pointer-events: auto;
+  cursor: wait;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 60px;
+  height: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+/* Global Loading */

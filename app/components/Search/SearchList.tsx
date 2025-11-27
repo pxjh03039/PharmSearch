@@ -1,22 +1,23 @@
 "use client";
 
+import { useModalStore } from "@/stores/useModalStore";
 import "./Search.css";
 import { KakaoPlace } from "@/app/common/types/constants";
+import SearchDetail from "./SearchDetail";
 
 type Props = {
   searchList: KakaoPlace[];
   setSelectedPlace: (place: KakaoPlace | null) => void;
-  openModal: () => void;
 };
 
-export default function SearchList({
-  searchList,
-  setSelectedPlace,
-  openModal,
-}: Props) {
+export default function SearchList({ searchList, setSelectedPlace }: Props) {
+  const { openModal, closeModal } = useModalStore();
+
   const handleListItemClick = (place: KakaoPlace) => {
     setSelectedPlace(place);
-    openModal();
+    openModal(
+      <SearchDetail key={place.id} selectedPlace={place} onClose={closeModal} />
+    );
   };
 
   return (

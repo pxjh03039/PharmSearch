@@ -2,9 +2,6 @@
 
 import SearchHeader from "@/app/components/Search/SearchHeader";
 import SearchList from "@/app/components/Search/SearchList";
-import { Modal } from "@/app/components/Modal";
-import SearchDetail from "@/app/components/Search/SearchDetail";
-import useModal from "@/app/components/Modal/hooks/useModal";
 import { useState } from "react";
 import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import SearchLoading from "@/app/components/Search/SearchLoading";
@@ -22,8 +19,6 @@ const convertToLatLng = (place: KakaoPlace | null): LatLng | null => {
 };
 
 export default function SearchPage() {
-  const { isModalOpen, openModal, closeModal } = useModal();
-
   const [inputPlace, setInputPlace] = useState<KakaoPlace | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
   const [hasSearched, setHasSearched] = useState(false); // 검색 시도 여부
@@ -66,21 +61,11 @@ export default function SearchPage() {
             <SearchList
               searchList={searchList}
               setSelectedPlace={setSelectedPlace}
-              openModal={openModal}
             />
           ) : (
             <EmptySearch state={getEmptySearchState()} />
           )}
         </>
-      )}
-      {isModalOpen && selectedPlace && (
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <SearchDetail
-            key={selectedPlace.id}
-            selectedPlace={selectedPlace}
-            onClose={closeModal}
-          />
-        </Modal>
       )}
     </div>
   );

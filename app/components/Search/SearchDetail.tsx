@@ -14,7 +14,7 @@ type Props = {
 
 export default function SearchDetail({ selectedPlace, onClose }: Props) {
   const { data: session } = useSession();
-  const { addFavorite, isAdding } = useFavorites(session);
+  const { addFavorite, isAdding, isAddError } = useFavorites(session);
   const { setIsLoading } = useLoadingStore();
 
   useEffect(() => {
