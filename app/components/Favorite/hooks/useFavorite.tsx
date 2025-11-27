@@ -2,8 +2,9 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchGetFavorites } from "../apis/fetchGetFavorites";
-import { Session } from "next-auth";
 import { fetchDeleteFavorites } from "../apis/fetchDeleteFavorites";
+import { fetchPostFavorites } from "../apis/fetchPostFavorites";
+import { Session } from "next-auth";
 import { FavoritePlace } from "@/app/common/types/constants";
 
 export function useFavorites(session: Session | null) {
@@ -15,12 +16,26 @@ export function useFavorites(session: Session | null) {
     enabled: !!session,
   });
 
-  const { mutate: removeFavorite, isPending } = useMutation({
+  const { mutate: addFavorite, isPending: isAdding } = useMutation({
+    mutationFn: fetchPostFavorites,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    },
+  });
+
+  const { mutate: removeFavorite, isPending: isRemoving } = useMutation({
     mutationFn: fetchDeleteFavorites,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
     },
   });
 
-  return { favoriteList, isLoading, removeFavorite, isPending };
+  return {
+    favoriteList,
+    isLoading,
+    addFavorite,
+    isAdding,
+    removeFavorite,
+    isRemoving,
+  };
 }

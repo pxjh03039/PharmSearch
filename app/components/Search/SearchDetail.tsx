@@ -2,6 +2,10 @@
 
 import { KakaoPlace } from "@/app/common/types/constants";
 import "./Search.css";
+import { useFavorites } from "../Favorite/hooks/useFavorite";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { useLoadingStore } from "@/stores/useLoadingStore";
 
 type Props = {
   selectedPlace: KakaoPlace;
@@ -9,28 +13,16 @@ type Props = {
 };
 
 export default function SearchDetail({ selectedPlace, onClose }: Props) {
-  const handleFavorite = async () => {
-    try {
-      const res = await fetch("/api/favorite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedPlace),
-      });
+  const { data: session } = useSession();
+  const { addFavorite, isAdding } = useFavorites(session);
+  const { setIsLoading } = useLoadingStore();
 
-      const data = await res.json(); // 👈 응답 JSON 파싱
+  useEffect(() => {
+    setIsLoading(isAdding);
+  }, [isAdding, setIsLoading]);
 
-      if (!res.ok) {
-        // 서버에서 보낸 메시지 우선 표시
-        alert(data.message || "즐겨찾기 추가 실패");
-        return;
-      }
-
-      // 성공 시
-      alert(data.message || "즐겨찾기에 추가되었습니다!");
-    } catch (err) {
-      console.error(err);
-      alert("즐겨찾기 추가 실패. 로그인 상태를 확인해주세요.");
-    }
+  const handleFavorite = () => {
+    addFavorite(selectedPlace);
   };
 
   return (

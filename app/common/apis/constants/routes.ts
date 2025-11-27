@@ -1,5 +1,4 @@
 import { LatLng } from "@/app/common/types/constants";
-import { reverse } from "lodash";
 
 export const API_ROUTES = {
   pharmacies: "/api/pharmacies",
