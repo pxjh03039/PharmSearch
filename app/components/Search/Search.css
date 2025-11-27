@@ -384,9 +384,9 @@
   outline-offset: 2px;
 }
 .btn-primary {
-  background: #ef4444;
+  background: #e4af00;
   color: #fff;
-  border-color: #ef4444;
+  border-color: #e4af00;
 }
 .btn-primary:hover {
   filter: brightness(0.98);

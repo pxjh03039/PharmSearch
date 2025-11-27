@@ -1,4 +1,4 @@
-/* Modal.css */
+/* Modal */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -21,4 +21,54 @@
   position: relative;
   padding: 1rem;
 }
-/* Modal.css */
+/* Modal */
+
+/* Error Modal */
+.error_modal_container {
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.error_modal_content {
+  background: #ffffff;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.error_code {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.error_modal_cta {
+  display: flex;
+  justify-content: center;
+}
+
+.error_btn {
+  padding: 6px 8px;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
+
+.error_btn:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-2px);
+}
+
+/* Error Modal */

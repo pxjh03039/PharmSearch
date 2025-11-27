@@ -11,7 +11,7 @@ export async function GET() {
   try {
     if (!EMAIL) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "로그인이 필요합니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }
@@ -23,7 +23,7 @@ export async function GET() {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "찾을 수 없는 유저입니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
   try {
     if (!EMAIL) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "로그인이 필요합니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "찾을 수 없는 유저입니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }
@@ -105,7 +105,7 @@ export async function DELETE(req: Request) {
   try {
     if (!EMAIL) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "로그인이 필요합니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }
@@ -114,7 +114,7 @@ export async function DELETE(req: Request) {
 
     if (!placeId) {
       return NextResponse.json(
-        { error: "Missing placeId" },
+        { error: "즐겨찾기에 존재하지 않는 장소입니다." },
         { status: HTTP_STATUS_CODE.BAD_REQUEST }
       );
     }
@@ -125,7 +125,7 @@ export async function DELETE(req: Request) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" },
+        { error: "찾을 수 없는 유저입니다." },
         { status: HTTP_STATUS_CODE.UNAUTHORIZED }
       );
     }

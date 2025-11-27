@@ -1,4 +1,5 @@
-import { HTTP_STATUS_CODE } from "../../apis/constants/http";
+import { HTTP_STATUS_CODE } from "../constants/http";
+import { dispatchErrorEvent } from "./Error";
 
 const baseHeader = {
   "Content-Type": "application/json",
@@ -59,11 +60,24 @@ export default class APIClient {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new HTTPError(
-          `에러 발생 (url: ${url})\n
-           내용: ${errorText} (${response.status})`,
+
+        let parsedError;
+        try {
+          parsedError = JSON.parse(errorText);
+        } catch {
+          parsedError = { error: errorText };
+        }
+
+        const errorMessage =
+          parsedError.error || parsedError.message || errorText;
+
+        const httpError = new HTTPError(
+          `에러 발생 (url: ${url})\n내용: ${errorMessage} (${response.status})`,
           response.status
         );
+
+        this.showErrorModal(httpError);
+        throw httpError;
       }
 
       return response;
@@ -72,10 +86,13 @@ export default class APIClient {
         throw error;
       }
 
-      throw new HTTPError(
+      const networkError = new HTTPError(
         `네트워크 오류 또는 요청 실패 (url: ${path})`,
         HTTP_STATUS_CODE.NETWORK_ERROR
       );
+
+      this.showErrorModal(networkError);
+      throw networkError;
     }
   }
 
@@ -85,5 +102,23 @@ export default class APIClient {
     }
 
     return (await response.json()) as T;
+  }
+
+  private showErrorModal(error: HTTPError) {
+    const errorLines = error.message.split("\n");
+    const contentLine = errorLines.find((line) => line.includes("내용:"));
+    let displayMessage = "알 수 없는 오류가 발생했습니다.";
+
+    if (contentLine) {
+      const match = contentLine.match(/내용:\s*(.+)\s*\(\d+\)/);
+      if (match && match[1]) {
+        displayMessage = match[1].trim();
+      }
+    }
+
+    dispatchErrorEvent({
+      message: displayMessage,
+      statusCode: error.status,
+    });
   }
 }

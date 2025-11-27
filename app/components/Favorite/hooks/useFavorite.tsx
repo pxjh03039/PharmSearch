@@ -17,7 +17,7 @@ export function useFavorites(session: Session | null) {
   });
 
   const {
-    mutate: addFavorite,
+    mutateAsync: addFavorite,
     isPending: isAdding,
     isError: isAddError,
   } = useMutation({
@@ -28,7 +28,7 @@ export function useFavorites(session: Session | null) {
   });
 
   const {
-    mutate: removeFavorite,
+    mutateAsync: removeFavorite,
     isPending: isRemoving,
     isError: isRemoveError,
   } = useMutation({
