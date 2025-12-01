@@ -4,6 +4,8 @@ import { HTTP_STATUS_CODE } from "../../common/apis/constants/http";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("query");
+  const x = searchParams.get("x");
+  const y = searchParams.get("y");
 
   if (!query) {
     return NextResponse.json(
@@ -15,10 +17,15 @@ export async function GET(req: NextRequest) {
   const url = new URL("https://dapi.kakao.com/v2/local/search/keyword.json");
 
   url.searchParams.set("query", query);
-  url.searchParams.set("radius", "2000");
   url.searchParams.set("page", "1");
   url.searchParams.set("size", "15");
   url.searchParams.set("sort", "accuracy");
+
+  if (x && y) {
+    url.searchParams.set("x", x);
+    url.searchParams.set("y", y);
+    url.searchParams.set("radius", "20000");
+  }
 
   const response = await fetch(url.toString(), {
     headers: { Authorization: `KakaoAK ${process.env.KAKAO_CLIENT_ID}` },

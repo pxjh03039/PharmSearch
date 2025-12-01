@@ -39,15 +39,11 @@ export default function SearchPage() {
     setInputPlace(place);
   };
 
-  // EmptySearch 상태 결정
   const getEmptySearchState = () => {
     if (!hasSearched) {
-      return "initial"; // 아직 검색 안함
+      return "initial";
     }
-    if (inputPlace === null) {
-      return "noPlace"; // 검색했지만 장소 못 찾음
-    }
-    return "noPharmacy"; // 장소는 찾았지만 약국 없음
+    return "noPlace";
   };
 
   return (

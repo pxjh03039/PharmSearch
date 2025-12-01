@@ -14,16 +14,16 @@ export default function SearchHeader({ onSearch }: Props) {
 
   const {
     input,
-    suggestions,
-    hasSuggestions,
+    // suggestions,
+    // hasSuggestions,
     handleChange,
     handleKeyDown,
-    handleSuggestionClick,
-    handleFocus,
-    setShowAutoComplete,
+    // handleSuggestionClick,
+    // handleFocus,
+    // setShowAutoComplete,
   } = useSearchInput({ onSearch });
 
-  useClickOutside(containerRef, () => setShowAutoComplete(false));
+  // useClickOutside(containerRef, () => setShowAutoComplete(false));
 
   return (
     <div ref={containerRef} className="search-header-container">
@@ -33,10 +33,10 @@ export default function SearchHeader({ onSearch }: Props) {
         className="search-header-input"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
+        // onFocus={handleFocus}
       />
 
-      {hasSuggestions && suggestions && (
+      {/* {hasSuggestions && suggestions && (
         <ul className="search-header-suggestion">
           {suggestions.slice(0, 10).map((suggestion, index) => (
             <li
@@ -48,7 +48,7 @@ export default function SearchHeader({ onSearch }: Props) {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   );
 }

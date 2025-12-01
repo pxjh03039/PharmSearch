@@ -11,9 +11,11 @@ export const API_ROUTES = {
 export const pathGenerator = {
   pharmacies: (gps: LatLng) =>
     `${API_ROUTES.pharmacies}?x=${gps.lng}&y=${gps.lat}`,
-  keyword: (query: string) =>
-    `${API_ROUTES.keyword}?query=${encodeURIComponent(query)}
-    }`,
+  keyword: (query: string, gps: LatLng | null) => {
+    const baseUrl = `${API_ROUTES.keyword}?query=${encodeURIComponent(query)}`;
+    if (!gps) return baseUrl;
+    return `${baseUrl}&x=${gps.lng}&y=${gps.lat}&radius=20000`;
+  },
   direction: (origin: LatLng, destination: LatLng) =>
     `${API_ROUTES.direction}?origin=${origin.lng},${origin.lat}&destination=${destination.lng},${destination.lat}`,
   reverseGeocode: (gps: LatLng) =>
