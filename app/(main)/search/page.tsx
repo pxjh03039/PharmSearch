@@ -2,12 +2,13 @@
 
 import SearchHeader from "@/app/components/Search/SearchHeader";
 import SearchList from "@/app/components/Search/SearchList";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import SearchLoading from "@/app/components/Search/SearchLoading";
 import SearchError from "@/app/components/Search/SearchError";
 import EmptySearch from "@/app/components/Search/EmptySearch";
 import { useSearchPharmacies } from "@/app/components/Search/hooks/useSearchPharmacies";
+import { useLocationStore } from "@/stores/useLocationStore";
 
 const convertToLatLng = (place: KakaoPlace | null): LatLng | null => {
   if (!place) return null;
@@ -19,10 +20,10 @@ const convertToLatLng = (place: KakaoPlace | null): LatLng | null => {
 };
 
 export default function SearchPage() {
+  const { setMapCenter } = useLocationStore();
   const [inputPlace, setInputPlace] = useState<KakaoPlace | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
-  const [hasSearched, setHasSearched] = useState(false); // 검색 시도 여부
-
+  const [hasSearched, setHasSearched] = useState(false);
   const inputPlaceGps = convertToLatLng(inputPlace);
 
   const {
@@ -45,6 +46,15 @@ export default function SearchPage() {
     }
     return "noPlace";
   };
+
+  useEffect(() => {
+    if (selectedPlace) {
+      const selectedGps = convertToLatLng(selectedPlace);
+      if (selectedGps) {
+        setMapCenter(selectedGps);
+      }
+    }
+  }, [selectedPlace, setMapCenter]);
 
   return (
     <div className="search-container">

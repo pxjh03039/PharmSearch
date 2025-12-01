@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useSearchKeyword } from "./useSearchKeyword";
 import { KakaoPlace } from "@/app/common/types/constants";
-import { useLocation } from "../../KakaoMap/hooks/useLocation";
 import { useLocationStore } from "@/stores/useLocationStore";
 
 type Props = {
@@ -15,71 +14,48 @@ export const useSearchInput = ({ onSearch }: Props) => {
   const [input, setInput] = useState("");
   const [query, setQuery] = useState("");
   const [showAutoComplete, setShowAutoComplete] = useState(false);
-  const [isPendingSearch, setIsPendingSearch] = useState(false);
 
-  // const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  // const isSelectingRef = useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isSelectingRef = useRef(false);
 
-  const { data: suggestions } = useSearchKeyword(query, myGps!);
+  const { data: queryList } = useSearchKeyword(query, myGps!);
 
   useEffect(() => {
-    // Enter로 검색했을 때만 onSearch 호출
-    if (query && suggestions) {
-      onSearch(suggestions?.[0] ?? null);
+    // Enter 호출
+    if (query && queryList) {
+      onSearch(queryList?.[0] ?? null);
     }
-  }, [suggestions, query, onSearch]);
+  }, [queryList, onSearch]);
 
-  // useEffect(() => {
-  //   if (isPendingSearch && suggestions && suggestions.length > 0) {
-  //     onSearch(suggestions[0]);
-  //     setIsPendingSearch(false);
-  //     setShowAutoComplete(false);
-  //   } else if (isPendingSearch && (!suggestions || suggestions.length === 0)) {
-  //     onSearch(null);
-  //     setIsPendingSearch(false);
-  //     setShowAutoComplete(false);
-  //   }
-  // }, [suggestions, isPendingSearch, onSearch]);
+  useEffect(() => {
+    // 자동완성 호출
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
 
-  // 입력값 디바운싱
-  // useEffect(() => {
-  //   if (isSelectingRef.current) {
-  //     isSelectingRef.current = false;
-  //     return;
-  //   }
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
-  //   const trimmedInput = input.trim();
+    timeoutRef.current = setTimeout(() => {
+      setQuery(input.trim());
+      setShowAutoComplete(input.trim().length > 0);
+    }, 300);
 
-  //   if (timeoutRef.current) {
-  //     clearTimeout(timeoutRef.current);
-  //   }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [input]);
 
-  //   timeoutRef.current = setTimeout(() => {
-  //     setQuery(trimmedInput);
-  //     setShowAutoComplete(trimmedInput.length > 0);
-  //   }, 300);
-
-  //   return () => {
-  //     if (timeoutRef.current) {
-  //       clearTimeout(timeoutRef.current);
-  //     }
-  //   };
-  // }, [input]);
-
-  // const clearDebounceTimer = () => {
-  //   if (timeoutRef.current) {
-  //     clearTimeout(timeoutRef.current);
-  //     timeoutRef.current = null;
-  //   }
-  // };
-
-  // const triggerSearch = (searchQuery: string) => {
-  //   setQuery("");
-  //   setTimeout(() => {
-  //     setQuery(searchQuery);
-  //     setIsPendingSearch(true);
-  //   }, 0);
-  // };
+  const clearDebounceTimer = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -88,48 +64,35 @@ export const useSearchInput = ({ onSearch }: Props) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter" || !input.trim()) return;
     setQuery(input.trim());
-    onSearch(suggestions?.[0] ?? null);
-    // clearDebounceTimer();
-
-    // const hasMatchingSuggestions =
-    //   query === trimmedInput && suggestions && suggestions.length > 0;
-
-    // if (hasMatchingSuggestions) {
-    //   setShowAutoComplete(false);
-    //   onSearch(suggestions[0]);
-    // } else {
-    //   triggerSearch(trimmedInput);
-    //   setShowAutoComplete(false);
-    // }
+    onSearch(queryList?.[0] ?? null);
+    clearDebounceTimer();
   };
 
-  // const handleSuggestionClick = (place: KakaoPlace) => {
-  //   clearDebounceTimer();
-  //   isSelectingRef.current = true;
-  //   setShowAutoComplete(false);
-  //   setInput(place.place_name);
-  //   setQuery(place.place_name);
-  //   onSearch(place);
-  // };
+  const handleClick = (place: KakaoPlace) => {
+    clearDebounceTimer();
+    isSelectingRef.current = true;
+    setShowAutoComplete(false);
+    setInput(place.place_name);
+    setQuery(place.place_name);
+    onSearch(place);
+  };
 
-  // const handleFocus = () => {
-  //   if (input.trim()) {
-  //     setShowAutoComplete(true);
-  //   }
-  // };
+  const handleFocus = () => {
+    if (input.trim()) {
+      setShowAutoComplete(true);
+    }
+  };
 
-  // const hasSuggestions =
-  //   showAutoComplete && suggestions && suggestions.length > 0;
+  const hasQueryList = showAutoComplete && queryList && queryList.length > 0;
 
   return {
     input,
-    // suggestions,
-    // hasSuggestions,
-    // showAutoComplete,
-    // setShowAutoComplete,
+    queryList,
+    hasQueryList,
+    setShowAutoComplete,
     handleChange,
     handleKeyDown,
-    // handleSuggestionClick,
-    // handleFocus,
+    handleClick,
+    handleFocus,
   };
 };

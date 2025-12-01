@@ -14,16 +14,16 @@ export default function SearchHeader({ onSearch }: Props) {
 
   const {
     input,
-    // suggestions,
-    // hasSuggestions,
+    queryList,
+    hasQueryList,
     handleChange,
     handleKeyDown,
-    // handleSuggestionClick,
-    // handleFocus,
-    // setShowAutoComplete,
+    handleClick,
+    handleFocus,
+    setShowAutoComplete,
   } = useSearchInput({ onSearch });
 
-  // useClickOutside(containerRef, () => setShowAutoComplete(false));
+  useClickOutside(containerRef, () => setShowAutoComplete(false));
 
   return (
     <div ref={containerRef} className="search-header-container">
@@ -33,22 +33,27 @@ export default function SearchHeader({ onSearch }: Props) {
         className="search-header-input"
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        // onFocus={handleFocus}
+        onFocus={handleFocus}
       />
 
-      {/* {hasSuggestions && suggestions && (
+      {hasQueryList && queryList && (
         <ul className="search-header-suggestion">
-          {suggestions.slice(0, 10).map((suggestion, index) => (
+          {queryList.slice(0, 10).map((suggestion, index) => (
             <li
               key={suggestion.id || index}
               className="search-header-suggestion-item"
-              onClick={() => handleSuggestionClick(suggestion)}
+              onClick={() => handleClick(suggestion)}
             >
-              {suggestion.place_name}
+              <div className="search-header-suggestion-name">
+                {suggestion.place_name}
+              </div>
+              <div className="search-header-suggestion-address">
+                {suggestion.road_address_name || suggestion.address_name}
+              </div>
             </li>
           ))}
         </ul>
-      )} */}
+      )}
     </div>
   );
 }
