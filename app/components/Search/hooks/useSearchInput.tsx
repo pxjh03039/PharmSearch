@@ -17,15 +17,17 @@ export const useSearchInput = ({ onSearch }: Props) => {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSelectingRef = useRef(false);
+  const shouldSearchRef = useRef(false); // 검색 실행 여부 플래그
 
   const { data: queryList } = useSearchKeyword(query, myGps!);
 
   useEffect(() => {
-    // Enter 호출
-    if (query && queryList) {
+    // Enter나 선택 시에만 onSearch 호출
+    if (shouldSearchRef.current && query && queryList) {
       onSearch(queryList?.[0] ?? null);
+      shouldSearchRef.current = false;
     }
-  }, [queryList, onSearch]);
+  }, [queryList, query, onSearch]);
 
   useEffect(() => {
     // 자동완성 호출
@@ -63,9 +65,11 @@ export const useSearchInput = ({ onSearch }: Props) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key !== "Enter" || !input.trim()) return;
-    setQuery(input.trim());
-    onSearch(queryList?.[0] ?? null);
+
     clearDebounceTimer();
+    setShowAutoComplete(false);
+    shouldSearchRef.current = true; // 검색 실행 플래그 설정
+    setQuery(input.trim());
   };
 
   const handleClick = (place: KakaoPlace) => {
@@ -74,6 +78,7 @@ export const useSearchInput = ({ onSearch }: Props) => {
     setShowAutoComplete(false);
     setInput(place.place_name);
     setQuery(place.place_name);
+    shouldSearchRef.current = true; // 검색 실행 플래그 설정
     onSearch(place);
   };
 
