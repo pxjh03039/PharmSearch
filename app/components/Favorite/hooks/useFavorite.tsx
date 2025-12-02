@@ -5,7 +5,7 @@ import { fetchGetFavorites } from "../apis/fetchGetFavorites";
 import { fetchDeleteFavorites } from "../apis/fetchDeleteFavorites";
 import { fetchPostFavorites } from "../apis/fetchPostFavorites";
 import { Session } from "next-auth";
-import { FavoritePlace } from "@/app/common/types/constants";
+import { FavoritePlace, KakaoPlace } from "@/app/common/types/constants";
 
 export function useFavorites(session: Session | null) {
   const queryClient = useQueryClient();
@@ -38,6 +38,24 @@ export function useFavorites(session: Session | null) {
     },
   });
 
+  // ✅ 즐겨찾기 여부 확인 함수
+  const isFavorite = (place: KakaoPlace): boolean => {
+    return favoriteList.some((fav) => fav.placeId === place.id);
+  };
+
+  // ✅ 즐겨찾기 토글 함수 (추가/삭제)
+  const toggleFavorite = async (place: KakaoPlace) => {
+    const favorite = favoriteList.find((fav) => fav.placeId === place.id);
+
+    if (favorite) {
+      // 이미 즐겨찾기에 있으면 삭제
+      await removeFavorite(favorite.placeId);
+    } else {
+      // 없으면 추가
+      await addFavorite(place);
+    }
+  };
+
   return {
     favoriteList,
     isLoading,
@@ -47,5 +65,7 @@ export function useFavorites(session: Session | null) {
     removeFavorite,
     isRemoving,
     isRemoveError,
+    isFavorite, // ✅ 추가
+    toggleFavorite, // ✅ 추가
   };
 }

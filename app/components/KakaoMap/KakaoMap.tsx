@@ -21,6 +21,15 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
 
   useSearchPharmacies(myGps!);
 
+  const handleGpsClick = async () => {
+    await getMyLocation();
+
+    if (map) {
+      map.setLevel(4);
+      map.setCenter(new kakao.maps.LatLng(myGps!.lat, myGps!.lng));
+    }
+  };
+
   return (
     <div className="map-container">
       <Map
@@ -41,7 +50,7 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
         />
         {map && <MapMarkers map={map} />}
       </Map>
-      <GpsButton onClick={getMyLocation} />
+      <GpsButton onClick={handleGpsClick} />
     </div>
   );
 }

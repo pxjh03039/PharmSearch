@@ -14,15 +14,20 @@ type Props = {
 
 export default function SearchDetail({ selectedPlace, onClose }: Props) {
   const { data: session } = useSession();
-  const { addFavorite, isAdding, isAddError } = useFavorites(session);
+  const { toggleFavorite, isFavorite, isAdding, isRemoving, isAddError } =
+    useFavorites(session);
   const { setIsLoading } = useLoadingStore();
 
+  // ✅ 즐겨찾기 여부 확인
+  const isInFavorites = isFavorite(selectedPlace);
+  const isProcessing = isAdding || isRemoving;
+
   useEffect(() => {
-    setIsLoading(isAdding);
-  }, [isAdding, setIsLoading]);
+    setIsLoading(isProcessing);
+  }, [isProcessing, setIsLoading]);
 
   const handleFavorite = () => {
-    addFavorite(selectedPlace);
+    toggleFavorite(selectedPlace);
   };
 
   return (
@@ -50,8 +55,12 @@ export default function SearchDetail({ selectedPlace, onClose }: Props) {
         </div>
       </div>
       <div className="modal-cta">
-        <button className="btn btn-primary" onClick={handleFavorite}>
-          즐겨찾기
+        <button
+          className={`btn ${isInFavorites ? "btn-favorited" : "btn-primary"}`}
+          onClick={handleFavorite}
+          disabled={isProcessing}
+        >
+          {isInFavorites ? "즐겨찾기 해제" : "즐겨찾기"}
         </button>
         <button className="btn">공유</button>
         <button className="btn">길찾기</button>
