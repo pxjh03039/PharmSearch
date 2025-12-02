@@ -31,7 +31,10 @@ export default function SearchList({ searchList, setSelectedPlace }: Props) {
           <div className="title">{p.place_name}</div>
           <div className="address">{p.road_address_name || p.address_name}</div>
           <div className="phone">{p.phone ? ` ${p.phone}` : "-"}</div>
-          <div className="distance">{p.distance ? ` ${p.distance}m` : ""}</div>
+          <div className="distance">
+            {`${p.distance}m`} · 도보{" "}
+            {Math.max(1, Math.ceil(Number(p.distance) / 80))}분
+          </div>
         </li>
       ))}
     </ul>
