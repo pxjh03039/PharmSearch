@@ -1,5 +1,9 @@
 // hooks/useChat.ts
-import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchGetConversation } from "../apis/fetchGetConversation";
+import { fetchPostMessage, MessageInput } from "../apis/fetchPostMessage";
+import { fetchPostChat } from "../apis/fetchPostChat";
+import { fetchDeleteConversation } from "../apis/fetchDeleteConversation";
 
 export type Message = {
   id: string;
@@ -8,97 +12,112 @@ export type Message = {
   createdAt: string;
 };
 
+type Conversation = {
+  id: string;
+  userId: string;
+  messages: Message[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    loadMessages();
-  }, []);
+  // 대화 조회
+  const { data: conversation, isLoading: isLoadingMessages } =
+    useQuery<Conversation>({
+      queryKey: ["conversation"],
+      queryFn: fetchGetConversation,
+    });
 
-  // 메시지 불러오기
-  const loadMessages = async () => {
-    try {
-      const response = await fetch("/api/conversations");
-      if (response.ok) {
-        const conversation = await response.json();
-        setMessages(conversation.messages || []);
+  const messages = conversation?.messages || [];
+
+  // 메시지 추가 (낙관적 업데이트)
+  const { mutateAsync: addMessage, isPending: isAddingMessage } = useMutation({
+    mutationFn: fetchPostMessage,
+    onMutate: async (newMessage: MessageInput) => {
+      // 진행 중인 쿼리 취소
+      await queryClient.cancelQueries({ queryKey: ["conversation"] });
+
+      // 이전 데이터 스냅샷
+      const previousConversation = queryClient.getQueryData<Conversation>([
+        "conversation",
+      ]);
+
+      // 낙관적 업데이트
+      if (previousConversation) {
+        const optimisticMessage: Message = {
+          id: `temp-${Date.now()}`,
+          ...newMessage,
+          createdAt: new Date().toISOString(),
+        };
+
+        queryClient.setQueryData<Conversation>(["conversation"], {
+          ...previousConversation,
+          messages: [...previousConversation.messages, optimisticMessage],
+        });
       }
-    } catch (error) {
-      console.error("메시지 불러오기 실패:", error);
-    }
-  };
 
-  // 메시지 추가
-  const addMessage = async (content: string, role: "user" | "model") => {
-    if (!content.trim()) return null;
-
-    try {
-      const response = await fetch("/api/conversations/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, role }),
-      });
-
-      if (response.ok) {
-        const newMessage = await response.json();
-        setMessages((prev) => [...prev, newMessage]);
-        return newMessage;
+      return { previousConversation };
+    },
+    onError: (error, variables, context) => {
+      // 에러 발생 시 롤백
+      if (context?.previousConversation) {
+        queryClient.setQueryData(
+          ["conversation"],
+          context.previousConversation
+        );
       }
-    } catch (error) {
       console.error("메시지 추가 실패:", error);
-    }
-    return null;
-  };
+    },
+    onSettled: () => {
+      // 성공/실패 관계없이 데이터 다시 가져오기
+      queryClient.invalidateQueries({ queryKey: ["conversation"] });
+    },
+  });
 
-  // 채팅 전송
+  // AI 채팅 전송
+  const { mutateAsync: sendChat, isPending: isSendingChat } = useMutation({
+    mutationFn: async (text: string) => {
+      // 1. 사용자 메시지 추가
+      await addMessage({ content: text, role: "user" });
+
+      // 2. AI 응답 받기
+      const data = await fetchPostChat(text);
+
+      // 3. AI 메시지 추가
+      if (data.text) {
+        await addMessage({ content: data.text, role: "model" });
+      }
+
+      return data;
+    },
+  });
+
+  // 대화 삭제
+  const { mutateAsync: clearChat, isPending: isClearing } = useMutation({
+    mutationFn: fetchDeleteConversation,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversation"] });
+    },
+  });
+
+  // 간편한 전송 함수
   const onSend = async (text: string) => {
     if (!text.trim()) return;
-    setLoading(true);
-
-    // 사용자 메시지 추가
-    await addMessage(text, "user");
 
     try {
-      // AI 응답 받기
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.text) {
-          await addMessage(data.text, "model");
-        }
-      }
+      await sendChat(text);
     } catch (error) {
-      console.error("채팅 오류:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 채팅 초기화
-  const clearChat = async () => {
-    try {
-      const response = await fetch("/api/conversation", {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        setMessages([]);
-      }
-    } catch (error) {
-      console.error("채팅 삭제 실패:", error);
+      console.error("채팅 전송 실패:", error);
     }
   };
 
   return {
     messages,
-    loading,
+    isLoading: isLoadingMessages || isSendingChat,
     onSend,
     clearChat,
+    isClearing,
   };
 }

@@ -8,7 +8,7 @@ import { signIn, useSession } from "next-auth/react";
 
 export default function ChatPage() {
   const { data: session } = useSession();
-  const { messages, loading, onSend, clearChat } = useChat();
+  const { messages, isLoading, onSend, clearChat } = useChat();
 
   if (!session) {
     return (
@@ -21,9 +21,9 @@ export default function ChatPage() {
   return (
     <div className="chat-container">
       <div className="chat-main">
-        <ChatMessage messages={messages} loading={loading} />
+        <ChatMessage messages={messages} loading={isLoading} />
         <ChatInput
-          loading={loading}
+          loading={isLoading}
           onSend={onSend}
           hasMessages={messages.length > 0}
           onClear={clearChat}
