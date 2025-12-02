@@ -1,5 +1,6 @@
 "use client";
 
+import Login from "@/app/components/Auth/Login";
 import EmptyFavorite from "@/app/components/Favorite/EmptyFavorite";
 import FavoriteLogin from "@/app/components/Favorite/FavoiteLogin";
 import FavoriteDelete from "@/app/components/Favorite/FavoriteDelete";
@@ -29,8 +30,8 @@ export default function FavoritePage() {
 
   if (!session) {
     return (
-      <div className="favorite-container">
-        <FavoriteLogin signIn={signIn} />
+      <div className="login-container">
+        <Login signIn={signIn} />
       </div>
     );
   }

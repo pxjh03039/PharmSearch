@@ -2,6 +2,9 @@ export type LatLng = { lat: number; lng: number };
 
 export type User = { name: string; email: string };
 
+export type Role = "user" | "model";
+export type Msg = { id: string; role: Role; content: string };
+
 export type KakaoPlace = {
   address_name: string;
   distance: string;

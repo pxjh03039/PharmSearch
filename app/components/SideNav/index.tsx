@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
 import { useSession } from "next-auth/react";
-import Logout from "../Logout";
+import Logout from "../Auth/Logout";
 import { useModalStore } from "@/stores/useModalStore";
 
 const TABS = [
