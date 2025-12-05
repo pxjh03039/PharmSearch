@@ -50,13 +50,40 @@ export async function POST(req: NextRequest) {
       conversation = await prisma.conversation.create({
         data: {
           userId: user.id,
-          messages: [],
+          messages: JSON.stringify([]),
         },
       });
     }
 
-    // 메시지 추가
-    const messages = (conversation.messages as Message[]) || [];
+    // 🔥 안전한 메시지 파싱
+    let messages: Message[] = [];
+
+    if (conversation.messages) {
+      // JSON 타입일 수 있으므로 타입 확인
+      if (typeof conversation.messages === "string") {
+        try {
+          const trimmed = conversation.messages.trim();
+          if (trimmed === "" || trimmed === "null") {
+            console.log("⚠️ 빈 문자열 또는 null, 빈 배열로 초기화");
+            messages = [];
+          } else {
+            messages = JSON.parse(trimmed);
+          }
+        } catch (e) {
+          console.error("메시지 파싱 실패:", e);
+          console.log("저장된 값:", conversation.messages);
+          messages = [];
+        }
+      } else if (Array.isArray(conversation.messages)) {
+        // 이미 배열인 경우 (Prisma가 자동 파싱한 경우)
+        messages = conversation.messages as Message[];
+      } else {
+        console.error("예상치 못한 타입:", typeof conversation.messages);
+        messages = [];
+      }
+    }
+
+    // 새 메시지 추가
     const newMessage: Message = {
       id: crypto.randomUUID(),
       role,
@@ -65,11 +92,14 @@ export async function POST(req: NextRequest) {
     };
     messages.push(newMessage);
 
+    console.log(`💾 [메시지 저장] 총 ${messages.length}개 메시지`);
+    console.log(`   마지막 메시지: [${role}] ${content.substring(0, 50)}...`);
+
     // 대화 업데이트
     await prisma.conversation.update({
       where: { userId: user.id },
       data: {
-        messages: messages,
+        messages: JSON.stringify(messages),
         updatedAt: new Date(),
       },
     });

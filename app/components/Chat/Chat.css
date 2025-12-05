@@ -148,3 +148,53 @@
   color: #666;
   text-align: center;
 }
+
+/* styles/chat.css 또는 globals.css */
+
+/* 모달 컨텐츠 */
+/* 모달 헤더 */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+/* 모달 닫기 버튼 */
+.modal-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* 모달 액션 (하단 버튼) */
+.modal-actions {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+}
+
+/* 확인 버튼 - 전체 너비 */
+.modal-btn-confirm {
+  width: 100%;
+}
+
+/* 다크모드 */
+@media (prefers-color-scheme: dark) {
+  .modal-close-btn {
+    color: #d1d5db;
+  }
+
+  .modal-close-btn:hover {
+    background-color: #374151;
+    color: #f9fafb;
+  }
+}

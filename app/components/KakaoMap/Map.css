@@ -164,3 +164,61 @@
   text-align: left;
 }
 /* Map GPS Error */
+
+.map-search-button {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
+  padding: 12px 24px;
+  background: white;
+  border: none;
+  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  transition: all 0.3s ease;
+  animation: slideDown 0.3s ease;
+}
+
+.map-search-button:hover {
+  background: #f8f9fa;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.map-search-button:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 버튼 등장 애니메이션 */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+  .map-search-button {
+    top: 16px;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}

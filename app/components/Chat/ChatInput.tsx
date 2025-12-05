@@ -3,6 +3,8 @@
 
 import { useMemo, useState } from "react";
 import { Send, Trash } from "lucide-react";
+import { useModalStore } from "@/stores/useModalStore";
+import ChatClearConfirm from "./ChatClearConfirm";
 
 type Props = {
   loading: boolean;
@@ -18,6 +20,7 @@ export default function ChatInput({
   onClear,
 }: Props) {
   const [input, setInput] = useState("");
+  const { openModal, closeModal } = useModalStore();
 
   const canSend = useMemo(
     () => input.trim().length > 0 && !loading,
@@ -29,6 +32,10 @@ export default function ChatInput({
     if (!text) return;
     onSend(text);
     setInput("");
+  };
+
+  const handleClearClick = () => {
+    openModal(<ChatClearConfirm closeModal={closeModal} onConfirm={onClear} />);
   };
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -53,7 +60,7 @@ export default function ChatInput({
         </button>
         <button
           disabled={!hasMessages || loading}
-          onClick={onClear}
+          onClick={handleClearClick}
           className="chat-btn"
         >
           <Trash className="icon-small" />

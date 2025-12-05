@@ -25,7 +25,7 @@ export default function FavoriteList({
       address_name: favorite.address,
       road_address_name: favorite.address,
       phone: favorite.phone || "",
-      place_url: favorite.place_url || "",
+      place_url: favorite.placeUrl || "",
       distance: favorite.distance || "0",
       x: favorite.lng,
       y: favorite.lat,
