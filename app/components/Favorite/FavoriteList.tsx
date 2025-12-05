@@ -8,13 +8,11 @@ import SearchDetail from "../Search/SearchDetail";
 type Props = {
   favoriteList: FavoritePlace[];
   setSelectedPlace: (place: KakaoPlace | null) => void;
-  onDelete: (placeId: string) => void;
 };
 
 export default function FavoriteList({
   favoriteList,
   setSelectedPlace,
-  onDelete,
 }: Props) {
   const { openModal, closeModal } = useModalStore();
 
@@ -54,12 +52,6 @@ export default function FavoriteList({
         >
           <div className="item-header">
             <div className="title">{item.title}</div>
-            <button
-              className="delete-btn"
-              onClick={() => onDelete(item.placeId)}
-            >
-              삭제
-            </button>
           </div>
           <div className="address">{item.address}</div>
           <div className="phone">{item.phone ? ` ${item.phone}` : "-"}</div>

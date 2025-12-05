@@ -3,13 +3,10 @@
 import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import Login from "@/app/components/Auth/Login";
 import EmptyFavorite from "@/app/components/Favorite/EmptyFavorite";
-import FavoriteLogin from "@/app/components/Favorite/FavoiteLogin";
-import FavoriteDelete from "@/app/components/Favorite/FavoriteDelete";
 import FavoriteList from "@/app/components/Favorite/FavoriteList";
 import FavoriteLoading from "@/app/components/Favorite/FavoriteLoading";
 import { useFavorites } from "@/app/components/Favorite/hooks/useFavorite";
 import { useLocationStore } from "@/stores/useLocationStore";
-import { useModalStore } from "@/stores/useModalStore";
 import { useSession, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -25,8 +22,7 @@ const convertToLatLng = (place: KakaoPlace | null): LatLng | null => {
 export default function FavoritePage() {
   const { data: session } = useSession();
   const { setMapCenter } = useLocationStore();
-  const { openModal, closeModal } = useModalStore();
-  const { favoriteList, isLoading, removeFavorite, isAdding, isRemoving } =
+  const { favoriteList, isLoading, isAdding, isRemoving } =
     useFavorites(session);
   const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
 
@@ -40,16 +36,6 @@ export default function FavoritePage() {
       }
     }
   }, [selectedPlace, setMapCenter]);
-
-  const handleDeleteClick = (placeId: string) => {
-    openModal(
-      <FavoriteDelete
-        placeId={placeId}
-        closeModal={closeModal}
-        onDelete={removeFavorite}
-      />
-    );
-  };
 
   if (!session) {
     return (
@@ -73,7 +59,6 @@ export default function FavoritePage() {
         <FavoriteList
           favoriteList={favoriteList}
           setSelectedPlace={setSelectedPlace}
-          onDelete={handleDeleteClick}
         />
       ) : (
         <EmptyFavorite />

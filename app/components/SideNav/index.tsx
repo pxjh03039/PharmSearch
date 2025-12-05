@@ -4,9 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 import "./SideNav.css";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import Logout from "../Auth/Logout";
 import { useModalStore } from "@/stores/useModalStore";
+import { LogIn, LogOut } from "lucide-react";
 
 const TABS = [
   { href: "/search", label: "검색" },
@@ -21,8 +22,12 @@ export default function SideNav() {
   const { openModal, closeModal } = useModalStore();
   const { data: session } = useSession();
 
-  const handleClick = () => {
+  const handleLogoutClick = () => {
     openModal(<Logout onClose={closeModal} />);
+  };
+
+  const handleLoginClick = () => {
+    signIn("kakao");
   };
 
   return (
@@ -42,16 +47,14 @@ export default function SideNav() {
             </Link>
           );
         })}
-        {session && (
-          <>
-            <button className="navigation-logout" onClick={handleClick}>
-              <img
-                src="/Logout.png"
-                alt="logout icon"
-                className="logout-icon"
-              />
-            </button>
-          </>
+        {session ? (
+          <button className="navigation-logout" onClick={handleLogoutClick}>
+            <LogOut className="logout-icon" />
+          </button>
+        ) : (
+          <button className="navigation-login" onClick={handleLoginClick}>
+            <LogIn className="login-icon" />
+          </button>
         )}
       </div>
     </div>

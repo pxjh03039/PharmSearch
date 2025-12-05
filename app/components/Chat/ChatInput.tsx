@@ -4,7 +4,7 @@
 import { useMemo, useState } from "react";
 import { Send, Trash } from "lucide-react";
 import { useModalStore } from "@/stores/useModalStore";
-import ChatClearConfirm from "./ChatClearConfirm";
+import ConfirmModal from "../Modal/ConfirmModal";
 
 type Props = {
   loading: boolean;
@@ -35,7 +35,14 @@ export default function ChatInput({
   };
 
   const handleClearClick = () => {
-    openModal(<ChatClearConfirm closeModal={closeModal} onConfirm={onClear} />);
+    openModal(
+      <ConfirmModal
+        closeModal={closeModal}
+        confirm={onClear}
+        title="대화 삭제"
+        message={`이전 대화 내용을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`}
+      />
+    );
   };
 
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
