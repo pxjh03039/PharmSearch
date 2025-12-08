@@ -1,15 +1,8 @@
+import mainClient from "@/app/common/apis/Client/mainClient";
+import { API_ROUTES } from "@/app/common/apis/constants/routes";
+
 export async function fetchPostChat(text: string) {
-  const response = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      prompt: text,
-    }),
-  });
+  const res = await mainClient.post(API_ROUTES.chat, { prompt: text });
 
-  if (!response.ok) {
-    throw new Error("AI 응답을 받을 수 없습니다.");
-  }
-
-  return response.json();
+  return res;
 }

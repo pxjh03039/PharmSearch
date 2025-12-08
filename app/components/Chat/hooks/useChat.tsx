@@ -1,30 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchGetConversation } from "../apis/fetchGetConversation";
-import { fetchPostMessage, MessageInput } from "../apis/fetchPostMessage";
+import { fetchPostMessage } from "../apis/fetchPostMessage";
 import { fetchPostChat } from "../apis/fetchPostChat";
 import { fetchDeleteConversation } from "../apis/fetchDeleteConversation";
+import { Session } from "next-auth";
+import {
+  Conversation,
+  Message,
+  MessageInput,
+} from "@/app/common/types/constants";
 
-export type Message = {
-  id: string;
-  role: "user" | "model";
-  content: string;
-  createdAt: string;
-};
-
-type Conversation = {
-  id: string;
-  userId: string;
-  messages: Message[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-export function useChat() {
+export function useChat(session: Session | null) {
   const queryClient = useQueryClient();
 
   const { data: conversation } = useQuery<Conversation>({
     queryKey: ["conversation"],
     queryFn: fetchGetConversation,
+    enabled: !!session,
   });
 
   const messages = conversation?.messages || [];

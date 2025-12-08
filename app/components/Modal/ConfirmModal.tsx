@@ -17,6 +17,11 @@ export default function ConfirmModal({
   confirmText = "확인",
   confirm,
 }: Props) {
+  const handleClick = async () => {
+    await confirm();
+    closeModal();
+  };
+
   return (
     <>
       <div className="modal-title">{title}</div>
@@ -29,7 +34,7 @@ export default function ConfirmModal({
         ))}
       </p>
       <div className="modal-actions">
-        <button onClick={confirm} className="modal-btn modal-btn-confirm">
+        <button onClick={handleClick} className="modal-btn modal-btn-confirm">
           {confirmText}
         </button>
       </div>

@@ -3,6 +3,9 @@ import { LatLng } from "@/app/common/types/constants";
 export const API_ROUTES = {
   pharmacies: "/api/pharmacies",
   keyword: "/api/keyword",
+  chat: "/api/chat",
+  conversations: "/api/conversations",
+  conversationsMessages: "/api/conversations/messages",
   favorite: "/api/favorite",
   direction: "/api/direction",
   reverseGeocode: "/api/reverse-geocode",

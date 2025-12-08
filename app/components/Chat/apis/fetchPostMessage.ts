@@ -1,18 +1,9 @@
-export type MessageInput = {
-  content: string;
-  role: "user" | "model";
-};
+import mainClient from "@/app/common/apis/Client/mainClient";
+import { API_ROUTES } from "@/app/common/apis/constants/routes";
+import { MessageInput } from "@/app/common/types/constants";
 
 export async function fetchPostMessage(message: MessageInput) {
-  const response = await fetch("/api/conversations/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(message),
-  });
+  const res = await mainClient.post(API_ROUTES.conversationsMessages, message);
 
-  if (!response.ok) {
-    throw new Error("메시지를 저장할 수 없습니다.");
-  }
-
-  return response.json();
+  return res;
 }

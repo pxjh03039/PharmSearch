@@ -61,14 +61,12 @@ export async function POST(req: NextRequest) {
         try {
           const trimmed = conversation.messages.trim();
           if (trimmed === "" || trimmed === "null") {
-            console.log("⚠️ [Gemini] 빈 문자열 또는 null, 빈 배열로 초기화");
             allMessages = [];
           } else {
             allMessages = JSON.parse(trimmed);
           }
         } catch (e) {
           console.error("❌ [Gemini] 메시지 파싱 실패:", e);
-          console.log("저장된 값:", conversation.messages);
           allMessages = [];
         }
       } else if (Array.isArray(conversation.messages)) {

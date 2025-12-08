@@ -1,9 +1,9 @@
+import mainClient from "@/app/common/apis/Client/mainClient";
+import { API_ROUTES } from "@/app/common/apis/constants/routes";
+import { Conversation } from "@/app/common/types/constants";
+
 export async function fetchGetConversation() {
-  const response = await fetch("/api/conversations");
+  const res = await mainClient.get<Conversation>(API_ROUTES.conversations);
 
-  if (!response.ok) {
-    throw new Error("대화를 불러올 수 없습니다.");
-  }
-
-  return response.json();
+  return res;
 }

@@ -35,3 +35,23 @@ export type FavoritePlace = {
   place_url?: string | null;
   phone?: string | null;
 };
+
+export type Message = {
+  id: string;
+  role: "user" | "model";
+  content: string;
+  createdAt: string;
+};
+
+export type Conversation = {
+  id: string;
+  userId: string;
+  messages: Message[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MessageInput = {
+  content: string;
+  role: "user" | "model";
+};

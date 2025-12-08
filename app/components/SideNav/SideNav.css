@@ -11,10 +11,10 @@
 
 .navigation {
   display: flex;
-  flex-direction: column; /* 세로 배치 */
-  height: 100vh; /* 전체 높이 */
-  justify-content: flex-start; /* 위쪽부터 쌓기 */
-  align-items: center; /* 가운데 정렬 (선택) */
+  flex-direction: column;
+  height: 100vh;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .navigation_item {
@@ -44,33 +44,19 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  display: flex; /* 아이콘 + 텍스트 정렬 */
+  display: flex;
   align-items: center;
-  justify-content: center; /* 가운데 정렬 */
+  justify-content: center;
   background-color: #0ea5e9;
 }
 
 .logout-icon,
 .login-icon {
-  width: 24px; /* 아이콘 크기 */
+  width: 24px;
   height: 24px;
-  object-fit: contain;
 }
 
-.logout-modal {
-  text-align: center;
-}
-
-.logout-modal-buttons {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
-}
-
-.logout-modal-buttons button {
-  width: 100px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
+.navigation-login:hover,
+.navigation-logout:hover {
+  background-color: rgba(255, 255, 255, 0.15);
 }

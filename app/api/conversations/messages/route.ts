@@ -92,9 +92,6 @@ export async function POST(req: NextRequest) {
     };
     messages.push(newMessage);
 
-    console.log(`💾 [메시지 저장] 총 ${messages.length}개 메시지`);
-    console.log(`   마지막 메시지: [${role}] ${content.substring(0, 50)}...`);
-
     // 대화 업데이트
     await prisma.conversation.update({
       where: { userId: user.id },

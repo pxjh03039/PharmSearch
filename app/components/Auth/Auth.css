@@ -34,26 +34,10 @@
   padding: 0.5rem;
 }
 
-.logout-icon-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.logout-icon {
-  width: 20px;
-  height: 20px;
-  color: #ef4444;
-  background: #fee2e2;
-  padding: 12px;
-  border-radius: 50%;
-}
-
 .logout-title {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
-  margin-bottom: 8px;
 }
 
 .logout-message {
@@ -72,6 +56,7 @@
 .logout-modal-buttons button {
   flex: 1;
   max-width: 120px;
+  width: 100px;
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -86,81 +71,13 @@
   color: #374151;
 }
 
-.logout-btn-cancel:hover {
-  background-color: #e5e7eb;
-}
-
-.logout-btn-confirm {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-}
-
 .logout-btn-confirm:hover {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.logout-modal-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.logout-modal-buttons button {
-  flex: 1;
-  max-width: 120px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.logout-btn-cancel {
-  background-color: #f3f4f6;
-  color: #374151;
-}
-
-.logout-btn-cancel:hover {
-  background-color: #e5e7eb;
-}
-
 .logout-btn-confirm {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-}
-
-.logout-btn-confirm:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-/* Login/Logout Navigation Buttons */
-.navigation-login,
-.navigation-logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.navigation-login:hover,
-.navigation-logout:hover {
-  background-color: #f3f4f6;
-}
-
-.login-icon,
-.logout-icon {
-  width: 20px;
-  height: 20px;
-  color: #6b7280;
 }

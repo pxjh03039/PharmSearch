@@ -66,17 +66,12 @@ export async function GET(req: NextRequest) {
           }
         } catch (e) {
           console.error("❌ [GET] 메시지 파싱 실패:", e);
-          console.log("저장된 값:", conversation.messages);
           messages = [];
         }
       } else if (Array.isArray(conversation.messages)) {
         messages = conversation.messages as Message[];
       }
     }
-
-    console.log(
-      `📖 [대화 조회] 사용자: ${user.email}, 메시지 수: ${messages.length}`
-    );
 
     // 🔥 반드시 파싱된 배열을 반환
     return NextResponse.json({

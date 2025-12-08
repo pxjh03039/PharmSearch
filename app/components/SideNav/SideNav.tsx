@@ -49,11 +49,11 @@ export default function SideNav() {
         })}
         {session ? (
           <button className="navigation-logout" onClick={handleLogoutClick}>
-            <LogOut className="logout-icon" />
+            <LogOut className="logout-icon" color="white" />
           </button>
         ) : (
           <button className="navigation-login" onClick={handleLoginClick}>
-            <LogIn className="login-icon" />
+            <LogIn className="login-icon" color="white" />
           </button>
         )}
       </div>

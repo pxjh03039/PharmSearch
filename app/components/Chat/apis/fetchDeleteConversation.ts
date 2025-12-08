@@ -1,11 +1,8 @@
+import mainClient from "@/app/common/apis/Client/mainClient";
+import { API_ROUTES } from "@/app/common/apis/constants/routes";
+
 export async function fetchDeleteConversation() {
-  const response = await fetch("/api/conversations", {
-    method: "DELETE",
-  });
+  const res = await mainClient.delete(API_ROUTES.conversations);
 
-  if (!response.ok) {
-    throw new Error("대화를 삭제할 수 없습니다.");
-  }
-
-  return response.json();
+  return res;
 }
