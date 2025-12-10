@@ -8,8 +8,19 @@ import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import { useDirection } from "@/app/components/Direction/hooks/useDirection";
 import { useSearchParams } from "next/navigation";
 import { useLocationStore } from "@/stores/useLocationStore";
+import { signIn, useSession } from "next-auth/react";
+import Login from "@/app/components/Auth/Login";
 
 export default function DirectionPage() {
+  const { data: session } = useSession();
+
+  if (!session) {
+    return (
+      <div className="login-container">
+        <Login signIn={signIn} />
+      </div>
+    );
+  }
   const searchParams = useSearchParams();
   const { myGps } = useLocationStore();
 
