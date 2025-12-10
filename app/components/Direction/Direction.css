@@ -1,49 +1,159 @@
-.direction-panel {
-  width: 320px;
+/* Direction */
+.direction-container {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #e5e7eb;
-  background-color: #ffffff;
-  padding: 16px;
+  padding: 1rem;
   box-sizing: border-box;
+  background: #fff;
+  font-family: "Pretendard", sans-serif;
 }
 
-.direction-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.direction-title {
+.direction-empty {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  font-size: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  margin: 24px 0;
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.empty-description {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.empty-description strong {
+  color: #1f2937;
   font-weight: 600;
 }
 
-.direction-sub {
+.empty-hint {
   font-size: 12px;
-  color: #6b7280;
+  color: #9ca3af;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
 }
 
-.direction-close {
+/* 로딩 오버레이 */
+.direction-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.direction-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: direction-spin 0.8s linear infinite;
+}
+
+@keyframes direction-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.direction-loading-text {
+  margin-top: 16px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+}
+/* Direction */
+
+/* Direction Header */
+.direction-header-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+  border: 2px solid #cacaca;
+  border-radius: 8px;
+  overflow: visible;
+  background: #fff;
+}
+
+.direction-header-input .search-header-input {
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.direction-header-input .search-header-container:first-child {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.direction-header-origin-input,
+.direction-header-destination-input {
   border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 4px;
 }
 
+.direction-header-origin-input:focus,
+.direction-header-destination-input:focus {
+  border: 2px solid #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.3);
+}
+
+.search-button {
+  padding: 10px;
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 80px;
+  align-self: flex-end;
+}
+
+.search-button:hover {
+  background-color: #3367d6;
+}
+
+.search-button:active {
+  background-color: #2952b3;
+}
+/* Direction Header */
+
+/* Direction Summary */
 .direction-summary {
   display: flex;
   justify-content: space-between;
   padding: 10px 12px;
-  margin-bottom: 12px;
+  margin: 16px 0 12px 0;
   border-radius: 8px;
-  background-color: #f9fafb;
+  background-color: #f1f1f1;
 }
 
 .summary-item {
@@ -61,7 +171,9 @@
   font-size: 13px;
   font-weight: 600;
 }
+/* Direction Summary */
 
+/* Direction Guide */
 .direction-steps {
   flex: 1;
   overflow-y: auto;
@@ -83,11 +195,13 @@
   margin-top: 4px;
 }
 
-/* 타입에 따라 색상만 살짝 변경 */
-.step-type-100,
 .step-type-101 {
-  background-color: #10b981; /* 출발/도착 */
+  background-color: #10b981;
   border-color: #10b981;
+}
+.step-type-100 {
+  background-color: #e22020;
+  border-color: #e22020;
 }
 
 .step-content {
@@ -109,3 +223,4 @@
   font-size: 11px;
   color: #9ca3af;
 }
+/* Direction Guide */

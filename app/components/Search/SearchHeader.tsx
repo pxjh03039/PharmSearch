@@ -1,19 +1,32 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchInput } from "./hooks/useSearchInput";
 import { useClickOutside } from "./hooks/useClickOutside";
-import { KakaoPlace } from "@/app/common/types/constants";
+import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 
 type Props = {
   onSearch: (place: KakaoPlace | null) => void;
+  placeholder?: string;
+  className?: string;
+  searchType?: "keyword" | "pharmacy";
+  originGps?: LatLng | null;
+  initialValue?: string;
 };
 
-export default function SearchHeader({ onSearch }: Props) {
+export default function SearchHeader({
+  onSearch,
+  placeholder = "검색",
+  className = "",
+  searchType = "keyword",
+  originGps,
+  initialValue,
+}: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     input,
+    setInput,
     queryList,
     hasQueryList,
     handleChange,
@@ -21,7 +34,13 @@ export default function SearchHeader({ onSearch }: Props) {
     handleClick,
     handleFocus,
     setShowAutoComplete,
-  } = useSearchInput({ onSearch });
+  } = useSearchInput({ onSearch, searchType, originGps });
+
+  useEffect(() => {
+    if (initialValue) {
+      setInput(initialValue);
+    }
+  }, [initialValue]);
 
   useClickOutside(containerRef, () => setShowAutoComplete(false));
 
@@ -29,8 +48,8 @@ export default function SearchHeader({ onSearch }: Props) {
     <div ref={containerRef} className="search-header-container">
       <input
         value={input}
-        placeholder="검색"
-        className="search-header-input"
+        placeholder={placeholder}
+        className={`search-header-input ${className}`}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onFocus={handleFocus}

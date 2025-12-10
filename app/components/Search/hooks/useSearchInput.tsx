@@ -2,14 +2,21 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchKeyword } from "./useSearchKeyword";
-import { KakaoPlace } from "@/app/common/types/constants";
+import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import { useLocationStore } from "@/stores/useLocationStore";
+import { useSearchPharmacies } from "./useSearchPharmacies";
 
 type Props = {
   onSearch: (place: KakaoPlace | null) => void;
+  searchType?: "keyword" | "pharmacy";
+  originGps?: LatLng | null;
 };
 
-export const useSearchInput = ({ onSearch }: Props) => {
+export const useSearchInput = ({
+  onSearch,
+  searchType = "keyword",
+  originGps,
+}: Props) => {
   const { myGps } = useLocationStore();
   const [input, setInput] = useState("");
   const [query, setQuery] = useState("");
@@ -19,7 +26,15 @@ export const useSearchInput = ({ onSearch }: Props) => {
   const isSelectingRef = useRef(false);
   const shouldSearchRef = useRef(false); // 검색 실행 여부 플래그
 
-  const { data: queryList } = useSearchKeyword(query, myGps!);
+  const { data: keywordList } = useSearchKeyword(
+    searchType === "keyword" ? query : "",
+    myGps!
+  );
+
+  const pharmacyGps = searchType === "pharmacy" ? originGps || myGps : null;
+  const { data: pharmacyList } = useSearchPharmacies(pharmacyGps!);
+
+  const queryList = searchType === "keyword" ? keywordList : pharmacyList;
 
   useEffect(() => {
     // Enter나 선택 시에만 onSearch 호출
@@ -38,6 +53,11 @@ export const useSearchInput = ({ onSearch }: Props) => {
 
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+    }
+
+    if (searchType === "pharmacy") {
+      setShowAutoComplete(true);
+      return;
     }
 
     timeoutRef.current = setTimeout(() => {
@@ -83,7 +103,7 @@ export const useSearchInput = ({ onSearch }: Props) => {
   };
 
   const handleFocus = () => {
-    if (input.trim()) {
+    if (searchType === "pharmacy" || input.trim()) {
       setShowAutoComplete(true);
     }
   };
@@ -92,6 +112,7 @@ export const useSearchInput = ({ onSearch }: Props) => {
 
   return {
     input,
+    setInput,
     queryList,
     hasQueryList,
     setShowAutoComplete,

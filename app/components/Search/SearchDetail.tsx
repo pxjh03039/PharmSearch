@@ -50,7 +50,13 @@ export default function SearchDetail({ selectedPlace, onClose }: Props) {
 
   const handleDirection = () => {
     onClose();
-    router.push("/direction");
+    const params = new URLSearchParams({
+      destLat: selectedPlace.y,
+      destLng: selectedPlace.x,
+      destName: selectedPlace.place_name,
+    });
+
+    router.push(`/direction?${params.toString()}`);
   };
 
   return (
@@ -72,10 +78,6 @@ export default function SearchDetail({ selectedPlace, onClose }: Props) {
           {selectedPlace.road_address_name || selectedPlace.address_name}
         </div>
         <div className="modal-meta">{selectedPlace.phone || "-"}</div>
-        {/* <div className="modal-sub">
-          {`${selectedPlace.distance}m`} · 도보{" "}
-          {Math.max(1, Math.ceil(Number(selectedPlace.distance) / 80))}분
-        </div> */}
       </div>
       <div className="modal-cta">
         <button
