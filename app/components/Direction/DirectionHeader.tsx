@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import SearchHeader from "../Search/SearchHeader";
 import "./Direction.css";
 import { KakaoPlace, LatLng } from "@/app/common/types/constants";

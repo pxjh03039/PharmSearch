@@ -17,7 +17,7 @@ type Message = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, userLocation } = await req.json();
+    const { prompt } = await req.json();
     if (!prompt || typeof prompt !== "string") {
       return NextResponse.json(
         { error: "Invalid 'prompt' in body" },

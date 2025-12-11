@@ -32,7 +32,7 @@ export default function GlobalModal() {
     return () => {
       window.removeEventListener(ERROR_EVENT_NAME, handleError);
     };
-  }, [openModal, closeModal]);
+  }, [openModal, closeModal, setIsLoading]);
 
   return (
     <Modal isModalOpen={isModalOpen} onClose={closeModal}>

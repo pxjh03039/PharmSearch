@@ -22,7 +22,7 @@ async function findOrCreateUser(email: string, name?: string | null) {
 }
 
 // GET: 대화 조회
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {
@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const session = await getServerSession();
     if (!session?.user?.email) {

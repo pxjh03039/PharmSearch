@@ -15,7 +15,7 @@ type Props = {
 
 export default function SearchDetail({ selectedPlace, onClose }: Props) {
   const { data: session } = useSession();
-  const { toggleFavorite, isFavorite, isAdding, isRemoving, isAddError } =
+  const { toggleFavorite, isFavorite, isAdding, isRemoving } =
     useFavorites(session);
   const { setIsLoading } = useLoadingStore();
   const [showToast, setShowToast] = useState(false);

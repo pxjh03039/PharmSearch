@@ -3,7 +3,7 @@
 import { debounce } from "lodash";
 import { useLocationStore } from "@/stores/useLocationStore";
 import type { LatLng } from "@/app/common/types/constants";
-import { useCallback, useRef, useEffect, useMemo } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import { Geolocation } from "@capacitor/geolocation";
 import { Capacitor } from "@capacitor/core";
 

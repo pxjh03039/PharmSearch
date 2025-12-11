@@ -14,13 +14,6 @@ import Login from "@/app/components/Auth/Login";
 export default function DirectionPage() {
   const { data: session } = useSession();
 
-  if (!session) {
-    return (
-      <div className="login-container">
-        <Login signIn={signIn} />
-      </div>
-    );
-  }
   const searchParams = useSearchParams();
   const { myGps } = useLocationStore();
 
@@ -109,6 +102,14 @@ export default function DirectionPage() {
       alert("출발지와 도착지를 모두 입력해주세요.");
     }
   };
+
+  if (!session) {
+    return (
+      <div className="login-container">
+        <Login signIn={signIn} />
+      </div>
+    );
+  }
 
   return (
     <div className="direction-container">

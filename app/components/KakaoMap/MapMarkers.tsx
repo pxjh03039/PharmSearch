@@ -1,7 +1,6 @@
 import { MapMarker } from "react-kakao-maps-sdk";
 import { usePlacesStore } from "@/stores/usePlacesStore";
 import { useEffect, useState } from "react";
-import GpsImg from "@/app/common/assets/images/Gps.png";
 import StarImg from "@/app/common/assets/images/favorite.png";
 import PharmImg from "@/app/common/assets/images/pharm_marker.png";
 import { KakaoPlace } from "@/app/common/types/constants";
