@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import DirectionGuide from "@/app/components/Direction/DirectionGuide";
 import DirectionHeader from "@/app/components/Direction/DirectionHeader";
 import DirectionSummary from "@/app/components/Direction/DirectionSummary";
@@ -11,9 +11,8 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import { signIn, useSession } from "next-auth/react";
 import Login from "@/app/components/Auth/Login";
 
-export default function DirectionPage() {
-  const { data: session } = useSession();
-
+// 실제 로직을 담은 컴포넌트
+function DirectionContent() {
   const searchParams = useSearchParams();
   const { myGps } = useLocationStore();
 
@@ -103,14 +102,6 @@ export default function DirectionPage() {
     }
   };
 
-  if (!session) {
-    return (
-      <div className="login-container">
-        <Login signIn={signIn} />
-      </div>
-    );
-  }
-
   return (
     <div className="direction-container">
       <DirectionHeader
@@ -157,5 +148,31 @@ export default function DirectionPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// 메인 페이지 컴포넌트
+export default function DirectionPage() {
+  const { data: session } = useSession();
+
+  if (!session) {
+    return (
+      <div className="login-container">
+        <Login signIn={signIn} />
+      </div>
+    );
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <div className="direction-loading-overlay">
+          <div className="direction-loading-spinner"></div>
+          <p className="direction-loading-text">로딩 중...</p>
+        </div>
+      }
+    >
+      <DirectionContent />
+    </Suspense>
   );
 }
