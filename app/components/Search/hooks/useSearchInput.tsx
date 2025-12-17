@@ -28,21 +28,23 @@ export const useSearchInput = ({
 
   const { data: keywordList } = useSearchKeyword(
     searchType === "keyword" ? query : "",
-    myGps!
+    myGps
   );
 
   const pharmacyGps = searchType === "pharmacy" ? originGps || myGps : null;
-  const { data: pharmacyList } = useSearchPharmacies(pharmacyGps!);
+  const { data: pharmacyList } = useSearchPharmacies(pharmacyGps);
 
   const queryList = searchType === "keyword" ? keywordList : pharmacyList;
 
   useEffect(() => {
-    // Enter나 선택 시에만 onSearch 호출
-    if (shouldSearchRef.current && query && queryList) {
-      onSearch(queryList?.[0] ?? null);
-      shouldSearchRef.current = false;
-    }
-  }, [queryList, query, onSearch]);
+    // Enter로 검색했을 때만(키워드 검색) 첫 결과를 선택
+    if (searchType !== "keyword") return;
+    if (!shouldSearchRef.current) return;
+    if (!query || !queryList) return;
+
+    onSearch(queryList?.[0] ?? null);
+    shouldSearchRef.current = false;
+  }, [searchType, queryList, query, onSearch]);
 
   useEffect(() => {
     // 자동완성 호출
@@ -56,7 +58,6 @@ export const useSearchInput = ({
     }
 
     if (searchType === "pharmacy") {
-      setShowAutoComplete(true);
       return;
     }
 
@@ -70,7 +71,7 @@ export const useSearchInput = ({
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [input]);
+  }, [input, searchType]);
 
   const clearDebounceTimer = () => {
     if (timeoutRef.current) {
@@ -88,6 +89,10 @@ export const useSearchInput = ({
 
     clearDebounceTimer();
     setShowAutoComplete(false);
+
+    // 약국 리스트(pharmacy)는 키워드 검색이 아니라 리스트 선택 방식이므로 Enter 동작은 생략
+    if (searchType === "pharmacy") return;
+
     shouldSearchRef.current = true; // 검색 실행 플래그 설정
     setQuery(input.trim());
   };
@@ -97,8 +102,8 @@ export const useSearchInput = ({
     isSelectingRef.current = true;
     setShowAutoComplete(false);
     setInput(place.place_name);
-    setQuery(place.place_name);
-    shouldSearchRef.current = true; // 검색 실행 플래그 설정
+    setQuery("");
+    shouldSearchRef.current = false;
     onSearch(place);
   };
 

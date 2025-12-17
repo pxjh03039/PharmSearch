@@ -31,7 +31,7 @@ export default function SearchPage() {
     isLoading,
     isError,
     error,
-  } = useSearchPharmacies(inputPlaceGps!);
+  } = useSearchPharmacies(inputPlaceGps);
 
   const isSearchList = searchList && searchList.length > 0;
 

@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 import { HTTP_STATUS_CODE } from "@/app/common/apis/constants/http";
+import { parseConversationMessages } from "@/app/lib/conversationMessages";
+import type { Message } from "@/app/common/types/constants";
 
-type Message = {
-  id: string;
-  role: "user" | "model";
-  content: string;
-  createdAt: string;
-};
+export const runtime = "nodejs";
 
 async function findOrCreateUser(email: string, name?: string | null) {
   let user = await prisma.user.findUnique({ where: { email } });
@@ -23,7 +21,7 @@ async function findOrCreateUser(email: string, name?: string | null) {
 // 메시지 추가
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "인증되지 않은 사용자입니다." },
@@ -32,9 +30,16 @@ export async function POST(req: NextRequest) {
     }
 
     const { content, role } = await req.json();
-    if (!content || !role) {
+    if (!content || typeof content !== "string") {
       return NextResponse.json(
-        { error: "content와 role은 필수입니다." },
+        { error: "content는 필수입니다." },
+        { status: HTTP_STATUS_CODE.BAD_REQUEST }
+      );
+    }
+
+    if (role !== "user" && role !== "model") {
+      return NextResponse.json(
+        { error: "role은 user | model 이어야 합니다." },
         { status: HTTP_STATUS_CODE.BAD_REQUEST }
       );
     }
@@ -50,38 +55,12 @@ export async function POST(req: NextRequest) {
       conversation = await prisma.conversation.create({
         data: {
           userId: user.id,
-          messages: JSON.stringify([]),
+          messages: [],
         },
       });
     }
 
-    // 🔥 안전한 메시지 파싱
-    let messages: Message[] = [];
-
-    if (conversation.messages) {
-      // JSON 타입일 수 있으므로 타입 확인
-      if (typeof conversation.messages === "string") {
-        try {
-          const trimmed = conversation.messages.trim();
-          if (trimmed === "" || trimmed === "null") {
-            console.log("⚠️ 빈 문자열 또는 null, 빈 배열로 초기화");
-            messages = [];
-          } else {
-            messages = JSON.parse(trimmed);
-          }
-        } catch (e) {
-          console.error("메시지 파싱 실패:", e);
-          console.log("저장된 값:", conversation.messages);
-          messages = [];
-        }
-      } else if (Array.isArray(conversation.messages)) {
-        // 이미 배열인 경우 (Prisma가 자동 파싱한 경우)
-        messages = conversation.messages as Message[];
-      } else {
-        console.error("예상치 못한 타입:", typeof conversation.messages);
-        messages = [];
-      }
-    }
+    const messages = parseConversationMessages(conversation.messages);
 
     // 새 메시지 추가
     const newMessage: Message = {
@@ -96,8 +75,7 @@ export async function POST(req: NextRequest) {
     await prisma.conversation.update({
       where: { userId: user.id },
       data: {
-        messages: JSON.stringify(messages),
-        updatedAt: new Date(),
+        messages,
       },
     });
 

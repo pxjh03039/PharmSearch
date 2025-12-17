@@ -1,15 +1,12 @@
 // app/api/conversations/route.ts (또는 해당 경로)
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/lib/auth";
 import prisma from "@/app/lib/prisma";
 import { HTTP_STATUS_CODE } from "@/app/common/apis/constants/http";
+import { parseConversationMessages } from "@/app/lib/conversationMessages";
 
-type Message = {
-  id: string;
-  role: "user" | "model";
-  content: string;
-  createdAt: string;
-};
+export const runtime = "nodejs";
 
 async function findOrCreateUser(email: string, name?: string | null) {
   let user = await prisma.user.findUnique({ where: { email } });
@@ -24,7 +21,7 @@ async function findOrCreateUser(email: string, name?: string | null) {
 // GET: 대화 조회
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "인증되지 않은 사용자입니다." },
@@ -49,31 +46,13 @@ export async function GET() {
       conversation = await prisma.conversation.create({
         data: {
           userId: user.id,
-          messages: JSON.stringify([]),
+          messages: [],
         },
       });
     }
 
-    // 🔥 안전한 메시지 파싱
-    let messages: Message[] = [];
+    const messages = parseConversationMessages(conversation.messages);
 
-    if (conversation.messages) {
-      if (typeof conversation.messages === "string") {
-        try {
-          const trimmed = conversation.messages.trim();
-          if (trimmed && trimmed !== "null" && trimmed !== "") {
-            messages = JSON.parse(trimmed);
-          }
-        } catch (e) {
-          console.error("❌ [GET] 메시지 파싱 실패:", e);
-          messages = [];
-        }
-      } else if (Array.isArray(conversation.messages)) {
-        messages = conversation.messages as Message[];
-      }
-    }
-
-    // 🔥 반드시 파싱된 배열을 반환
     return NextResponse.json({
       id: conversation.id,
       userId: conversation.userId,
@@ -92,7 +71,7 @@ export async function GET() {
 
 export async function DELETE() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "인증되지 않은 사용자입니다." },
@@ -102,9 +81,10 @@ export async function DELETE() {
 
     const user = await findOrCreateUser(session.user.email, session.user.name);
 
-    await prisma.conversation.update({
+    await prisma.conversation.upsert({
       where: { userId: user.id },
-      data: { messages: [] },
+      create: { userId: user.id, messages: [] },
+      update: { messages: [] },
     });
 
     return NextResponse.json({ success: true });

@@ -1,9 +1,9 @@
 import { MapMarker } from "react-kakao-maps-sdk";
 import { usePlacesStore } from "@/stores/usePlacesStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import StarImg from "@/app/common/assets/images/favorite.png";
 import PharmImg from "@/app/common/assets/images/pharm_marker.png";
-import { KakaoPlace } from "@/app/common/types/constants";
+import { FavoritePlace, KakaoPlace } from "@/app/common/types/constants";
 import SearchDetail from "../Search/SearchDetail";
 import { useModalStore } from "@/stores/useModalStore";
 import { useSession } from "next-auth/react";
@@ -18,7 +18,6 @@ export default function MapMarkers({ map }: MapMarkersProps) {
   const { openModal, closeModal } = useModalStore();
   const { data: session } = useSession();
   const { favoriteList } = useFavorites(session);
-  const [selectedPlace, setSelectedPlace] = useState<KakaoPlace | null>(null);
   const bounds = new kakao.maps.LatLngBounds();
 
   useEffect(() => {
@@ -47,7 +46,6 @@ export default function MapMarkers({ map }: MapMarkersProps) {
   const handleMarkerClick = (selected: KakaoPlace) => {
     const { lat, lng } = convertToLatLng(selected);
     map.panTo(new kakao.maps.LatLng(lat, lng));
-    setSelectedPlace(selected);
     openModal(
       <SearchDetail
         key={selected.id}
@@ -57,17 +55,17 @@ export default function MapMarkers({ map }: MapMarkersProps) {
     );
   };
 
-  const convertFavoriteToKakaoPlace = (favorite: any): KakaoPlace => {
+  const convertFavoriteToKakaoPlace = (favorite: FavoritePlace): KakaoPlace => {
     return {
       id: favorite.placeId,
       place_name: favorite.title,
       address_name: favorite.address,
       road_address_name: favorite.address,
-      phone: favorite.phone || "",
-      place_url: favorite.placeUrl || "",
-      distance: favorite.distance || "0",
-      x: favorite.lng,
-      y: favorite.lat,
+      phone: favorite.phone ?? "",
+      place_url: favorite.placeUrl ?? "",
+      distance: "0",
+      x: String(favorite.lng),
+      y: String(favorite.lat),
     };
   };
 

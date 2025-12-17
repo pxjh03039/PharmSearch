@@ -16,17 +16,17 @@ export default function FavoriteList({
 }: Props) {
   const { openModal, closeModal } = useModalStore();
 
-  const convertFavoriteToKakaoPlace = (favorite: any): KakaoPlace => {
+  const convertFavoriteToKakaoPlace = (favorite: FavoritePlace): KakaoPlace => {
     return {
       id: favorite.placeId,
       place_name: favorite.title,
       address_name: favorite.address,
       road_address_name: favorite.address,
-      phone: favorite.phone || "",
-      place_url: favorite.placeUrl || "",
-      distance: favorite.distance || "0",
-      x: favorite.lng,
-      y: favorite.lat,
+      phone: favorite.phone ?? "",
+      place_url: favorite.placeUrl ?? "",
+      distance: "0",
+      x: String(favorite.lng),
+      y: String(favorite.lat),
     };
   };
 

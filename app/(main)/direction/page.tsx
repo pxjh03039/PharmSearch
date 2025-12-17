@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import DirectionGuide from "@/app/components/Direction/DirectionGuide";
 import DirectionHeader from "@/app/components/Direction/DirectionHeader";
 import DirectionSummary from "@/app/components/Direction/DirectionSummary";
+import DirectionRouteInfo from "@/app/components/Direction/DirectionRouteInfo";
 import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import { useDirection } from "@/app/components/Direction/hooks/useDirection";
 import { useSearchParams } from "next/navigation";
@@ -53,10 +54,11 @@ function DirectionContent() {
     }
   }, [searchParams, myGps]);
 
+  const canFetchDirection = !!searchOrigin && !!searchDestination;
   const { data: directionData, isLoading } = useDirection(
-    origin!,
-    destination!,
-    !!searchOrigin && !!searchDestination
+    searchOrigin,
+    searchDestination,
+    canFetchDirection
   );
   const summary = directionData?.summary;
   const guides = directionData?.sections?.[0]?.guides;
@@ -123,6 +125,10 @@ function DirectionContent() {
 
       {summary && (
         <>
+          <DirectionRouteInfo
+            originText={originText}
+            destinationText={destinationText}
+          />
           <DirectionSummary
             duration={summary.duration}
             distance={summary.distance}

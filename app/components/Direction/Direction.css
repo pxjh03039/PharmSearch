@@ -173,6 +173,52 @@
 }
 /* Direction Summary */
 
+/* Direction Route Info */
+.direction-route {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 12px 0 0 0;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.direction-route-label {
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  background-color: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.direction-route-text {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.direction-route-origin,
+.direction-route-destination {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.direction-route-arrow {
+  flex: none;
+  color: #9ca3af;
+}
+/* Direction Route Info */
+
 /* Direction Guide */
 .direction-steps {
   flex: 1;

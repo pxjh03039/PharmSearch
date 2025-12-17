@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/lib/auth";
 import prisma from "@/app/lib/prisma";
+import { parseConversationMessages } from "@/app/lib/conversationMessages";
+import type { Message } from "@/app/common/types/constants";
 
 const GEMINI_ENDPOINT =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
 export const runtime = "nodejs";
-
-type Message = {
-  id: string;
-  role: "user" | "model";
-  content: string;
-  createdAt: string;
-};
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,34 +47,9 @@ export async function POST(req: NextRequest) {
       where: { userId: user.id },
     });
 
-    // 🔥 안전한 메시지 파싱
-    let allMessages: Message[] = [];
-
-    if (conversation?.messages) {
-      // JSON 타입일 수 있으므로 타입 확인
-      if (typeof conversation.messages === "string") {
-        try {
-          const trimmed = conversation.messages.trim();
-          if (trimmed === "" || trimmed === "null") {
-            allMessages = [];
-          } else {
-            allMessages = JSON.parse(trimmed);
-          }
-        } catch (e) {
-          console.error("❌ [Gemini] 메시지 파싱 실패:", e);
-          allMessages = [];
-        }
-      } else if (Array.isArray(conversation.messages)) {
-        // 이미 배열인 경우 (Prisma가 자동 파싱한 경우)
-        allMessages = conversation.messages as Message[];
-      } else {
-        console.error(
-          "❌ [Gemini] 예상치 못한 타입:",
-          typeof conversation.messages
-        );
-        allMessages = [];
-      }
-    }
+    const allMessages: Message[] = parseConversationMessages(
+      conversation?.messages
+    );
 
     // 최근 20개 메시지만 사용 (10턴)
     const recentMessages = allMessages.slice(-20);
@@ -132,10 +102,30 @@ export async function POST(req: NextRequest) {
     }).finally(() => clearTimeout(id));
 
     if (!resp.ok) {
-      const err = await safeJson(resp);
+      const { json, text } = await readJsonOrText(resp);
+      const upstreamMessage = extractUpstreamMessage(json);
+      const errorMessage = toUserFacingUpstreamError(
+        resp.status,
+        upstreamMessage
+      );
+
+      const retryAfterSeconds = parseRetryAfterSeconds(
+        resp.headers.get("retry-after")
+      );
+      const headers: HeadersInit = {};
+      if (retryAfterSeconds !== null) {
+        headers["Retry-After"] = String(retryAfterSeconds);
+      }
+
       return NextResponse.json(
-        { error: "Upstream error", detail: err || (await resp.text()) },
-        { status: resp.status }
+        {
+          error: errorMessage,
+          code: resp.status === 429 ? "RATE_LIMITED" : "UPSTREAM_ERROR",
+          retryAfterSeconds,
+          upstreamMessage,
+          detail: json ?? text,
+        },
+        { status: resp.status, headers }
       );
     }
 
@@ -160,10 +150,58 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function safeJson(resp: Response) {
+function extractUpstreamMessage(json: unknown): string | null {
+  if (!json || typeof json !== "object") return null;
+
+  const candidate = json as any;
+  if (typeof candidate?.error?.message === "string") return candidate.error.message;
+  if (typeof candidate?.message === "string") return candidate.message;
+
+  return null;
+}
+
+function toUserFacingUpstreamError(
+  status: number,
+  upstreamMessage: string | null
+) {
+  if (status === 429) {
+    return "AI 요청이 많아 일시적으로 제한되었습니다. 잠시 후 다시 시도해주세요.";
+  }
+
+  if (status === 403) {
+    return "AI API 키/권한 설정을 확인해주세요.";
+  }
+
+  if (upstreamMessage) {
+    return `AI 서버 오류: ${upstreamMessage} (${status})`;
+  }
+
+  return `AI 서버 오류 (${status})`;
+}
+
+function parseRetryAfterSeconds(headerValue: string | null): number | null {
+  if (!headerValue) return null;
+
+  const seconds = Number.parseInt(headerValue, 10);
+  if (!Number.isFinite(seconds) || seconds <= 0) return null;
+
+  return seconds;
+}
+
+async function readJsonOrText(resp: Response): Promise<{
+  json: unknown | null;
+  text: string | null;
+}> {
   try {
-    return await resp.json();
+    const text = await resp.text();
+    if (!text) return { json: null, text: "" };
+
+    try {
+      return { json: JSON.parse(text), text };
+    } catch {
+      return { json: null, text };
+    }
   } catch {
-    return null;
+    return { json: null, text: null };
   }
 }

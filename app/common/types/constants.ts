@@ -32,7 +32,7 @@ export type FavoritePlace = {
   address: string;
   lat: number;
   lng: number;
-  place_url?: string | null;
+  placeUrl?: string | null;
   phone?: string | null;
 };
 

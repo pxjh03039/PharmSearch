@@ -41,7 +41,7 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
   const [searchGps, setSearchGps] = useState<LatLng | null>(myGps);
   const [showSearchButton, setShowSearchButton] = useState(false);
 
-  useSearchPharmacies(searchGps!);
+  useSearchPharmacies(searchGps);
 
   useEffect(() => {
     if (searchGps && mapCenter) {

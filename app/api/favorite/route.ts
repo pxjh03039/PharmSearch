@@ -1,9 +1,24 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/app/lib/auth";
 import prisma from "@/app/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, type Favorite } from "@prisma/client";
 import { HTTP_STATUS_CODE } from "@/app/common/apis/constants/http";
+import type { FavoritePlace } from "@/app/common/types/constants";
+
+export const runtime = "nodejs";
+
+function toFavoritePlace(favorite: Favorite): FavoritePlace {
+  return {
+    placeId: favorite.placeId,
+    title: favorite.title,
+    address: favorite.address ?? "",
+    lat: Number(favorite.lat),
+    lng: Number(favorite.lng),
+    placeUrl: favorite.placeUrl ?? null,
+    phone: favorite.phone ?? null,
+  };
+}
 
 export async function GET() {
   const SESSION = await getServerSession(authOptions);
@@ -28,7 +43,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json(user.favorites);
+    return NextResponse.json(user.favorites.map(toFavoritePlace));
   } catch (error) {
     console.error("Error fetching favorites:", error);
     return NextResponse.json(
@@ -89,7 +104,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(favorite);
+    return NextResponse.json(toFavoritePlace(favorite));
   } catch (error) {
     console.error("Error saving favorite:", error);
     return NextResponse.json(
