@@ -19,7 +19,7 @@ export default function DirectionRouteInfo({
       <div className="direction-route-text">
         <span className="direction-route-origin">{originText}</span>
         <span className="direction-route-arrow" aria-hidden="true">
-          →
+          {"\u2192"}
         </span>
         <span className="direction-route-destination">{destinationText}</span>
       </div>

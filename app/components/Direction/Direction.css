@@ -234,20 +234,36 @@
 }
 
 .step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
   height: 20px;
   border-radius: 999px;
   border: 2px solid #9ca3af;
   margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #374151;
+  background: #ffffff;
+}
+
+.step-icon-empty {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: transparent;
 }
 
 .step-type-101 {
   background-color: #10b981;
   border-color: #10b981;
+  color: #ffffff;
 }
 .step-type-100 {
   background-color: #e22020;
   border-color: #e22020;
+  color: #ffffff;
 }
 
 .step-content {
@@ -257,6 +273,13 @@
 .step-guidance {
   font-size: 13px;
   font-weight: 500;
+}
+
+.step-road-index {
+  margin-right: 6px;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .step-road-name {

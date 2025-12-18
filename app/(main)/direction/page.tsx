@@ -9,6 +9,7 @@ import { KakaoPlace, LatLng } from "@/app/common/types/constants";
 import { useDirection } from "@/app/components/Direction/hooks/useDirection";
 import { useSearchParams } from "next/navigation";
 import { useLocationStore } from "@/stores/useLocationStore";
+import { useDirectionStore } from "@/stores/useDirectionStore";
 import { signIn, useSession } from "next-auth/react";
 import Login from "@/app/components/Auth/Login";
 
@@ -16,6 +17,7 @@ import Login from "@/app/components/Auth/Login";
 function DirectionContent() {
   const searchParams = useSearchParams();
   const { myGps } = useLocationStore();
+  const { setDirection, clearDirection } = useDirectionStore();
 
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<LatLng | null>(null);
@@ -62,6 +64,93 @@ function DirectionContent() {
   );
   const summary = directionData?.summary;
   const guides = directionData?.sections?.[0]?.guides;
+
+  useEffect(() => {
+    if (!directionData || !searchOrigin || !searchDestination) {
+      clearDirection();
+      return;
+    }
+
+    const toArrow = (type?: number): string => {
+      const north = new Set([12, 29, 41, 81]);
+      const south = new Set([23, 35, 75]);
+      const east = new Set([20, 32, 72, 83]);
+      const west = new Set([26, 38, 78, 82]);
+      const northEast = new Set([18, 19, 30, 31, 70, 71]);
+      const southEast = new Set([21, 22, 33, 34, 73, 74]);
+      const southWest = new Set([24, 25, 36, 37, 76, 77]);
+      const northWest = new Set([27, 28, 39, 40, 79, 80]);
+
+      if (type !== undefined) {
+        if (north.has(type)) return "↑";
+        if (south.has(type)) return "↓";
+        if (east.has(type)) return "→";
+        if (west.has(type)) return "←";
+        if (northEast.has(type)) return "↗";
+        if (southEast.has(type)) return "↘";
+        if (southWest.has(type)) return "↙";
+        if (northWest.has(type)) return "↖";
+      }
+      return "↑";
+    };
+
+    const roads = directionData.sections?.[0]?.roads ?? [];
+    const path: LatLng[] = [];
+
+    roads.forEach((road: { vertexes?: number[] }) => {
+      const vertexes = road.vertexes ?? [];
+      for (let i = 0; i < vertexes.length - 1; i += 2) {
+        const lng = vertexes[i];
+        const lat = vertexes[i + 1];
+        const prev = path[path.length - 1];
+        if (!prev || prev.lat !== lat || prev.lng !== lng) {
+          path.push({ lat, lng });
+        }
+      }
+    });
+
+    if (path.length === 0) {
+      clearDirection();
+      return;
+    }
+
+    const guidePoints =
+      directionData.sections?.[0]?.guides?.map(
+        (
+          guide: {
+            x: number;
+          y: number;
+          guidance?: string;
+          name?: string;
+          type?: number;
+        },
+        index: number
+      ) => ({
+        lat: guide.y,
+        lng: guide.x,
+        guidance: guide.guidance,
+        name: guide.name,
+        type: guide.type,
+        directionArrow: toArrow(guide.type),
+        index: index + 1,
+      })
+    ) ?? [];
+
+    setDirection({
+      path,
+      origin: searchOrigin,
+      destination: searchDestination,
+      guides: guidePoints,
+    });
+  }, [
+    clearDirection,
+    directionData,
+    searchDestination,
+    searchOrigin,
+    setDirection,
+  ]);
+
+  useEffect(() => clearDirection, [clearDirection]);
 
   const handleOriginSearch = (place: KakaoPlace | null) => {
     if (place) {

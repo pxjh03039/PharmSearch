@@ -8,6 +8,7 @@ import SearchDetail from "../Search/SearchDetail";
 import { useModalStore } from "@/stores/useModalStore";
 import { useSession } from "next-auth/react";
 import { useFavorites } from "../Favorite/hooks/useFavorite";
+import { useDirectionStore } from "@/stores/useDirectionStore";
 
 type MapMarkersProps = {
   map: kakao.maps.Map;
@@ -18,16 +19,17 @@ export default function MapMarkers({ map }: MapMarkersProps) {
   const { openModal, closeModal } = useModalStore();
   const { data: session } = useSession();
   const { favoriteList } = useFavorites(session);
+  const { path: directionPath } = useDirectionStore();
   const bounds = new kakao.maps.LatLngBounds();
 
   useEffect(() => {
-    if (!map || !placeList.length) return;
+    if (!map || !placeList.length || directionPath.length) return;
     placeList.forEach((place) => {
       const { lat, lng } = convertToLatLng(place);
       bounds.extend(new kakao.maps.LatLng(lat, lng));
     });
     map.setBounds(bounds);
-  }, [map, placeList]);
+  }, [directionPath.length, map, placeList]);
 
   const convertToLatLng = (place: KakaoPlace) => ({
     lng: Number(place.x),

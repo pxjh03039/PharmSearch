@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { CustomOverlayMap, Map, MapMarker, Polyline } from "react-kakao-maps-sdk";
 import "./Map.css";
 import myGpsImg from "@/app/common/assets/images/myGps.png";
 import GpsButton from "@/app/common/components/GpsButton";
@@ -9,6 +9,7 @@ import MapMarkers from "./MapMarkers";
 import { useSearchPharmacies } from "../Search/hooks/useSearchPharmacies";
 import { LatLng } from "@/app/common/types/constants";
 import { useLocationStore } from "@/stores/useLocationStore";
+import { useDirectionStore } from "@/stores/useDirectionStore";
 
 type Props = {
   getMyLocation: () => Promise<LatLng>;
@@ -37,6 +38,12 @@ function calculateDistance(
 
 export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
   const { myGps, mapCenter } = useLocationStore();
+  const {
+    path: directionPath,
+    origin: directionOrigin,
+    destination: directionDestination,
+    guides: directionGuides,
+  } = useDirectionStore();
   const [map, setMap] = useState<kakao.maps.Map | null>(null);
   const [searchGps, setSearchGps] = useState<LatLng | null>(myGps);
   const [showSearchButton, setShowSearchButton] = useState(false);
@@ -75,6 +82,15 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
     }
   };
 
+  useEffect(() => {
+    if (!map || !directionPath.length) return;
+    const bounds = new kakao.maps.LatLngBounds();
+    directionPath.forEach(({ lat, lng }) => {
+      bounds.extend(new kakao.maps.LatLng(lat, lng));
+    });
+    map.setBounds(bounds);
+  }, [directionPath, map]);
+
   return (
     <div className="map-container">
       <Map
@@ -93,6 +109,46 @@ export default function KakaoMap({ getMyLocation, getMapCenter }: Props) {
             size: { width: 24, height: 24 },
           }}
         />
+        {directionPath.length > 1 && (
+          <>
+            <Polyline
+              path={directionPath}
+              strokeWeight={6}
+              strokeColor="#2563eb"
+              strokeOpacity={0.85}
+              strokeStyle="solid"
+            />
+            {directionOrigin && (
+              <CustomOverlayMap position={directionOrigin} zIndex={6}>
+                <div
+                  className="direction-marker direction-marker-start"
+                  title="출발지"
+                />
+              </CustomOverlayMap>
+            )}
+            {directionDestination && (
+              <CustomOverlayMap position={directionDestination} zIndex={6}>
+                <div
+                  className="direction-marker direction-marker-end"
+                  title="목적지"
+                />
+              </CustomOverlayMap>
+            )}
+            {directionGuides.map((guide, index) => (
+              <CustomOverlayMap
+                key={`direction-guide-${index}-${guide.lat}-${guide.lng}`}
+                position={{ lat: guide.lat, lng: guide.lng }}
+                zIndex={5}
+              >
+                <div className="direction-guide-badge" title={guide.guidance || guide.name || ""}>
+                  <span className="direction-guide-index">
+                    {guide.index ?? index + 1}
+                  </span>
+                </div>
+              </CustomOverlayMap>
+            ))}
+          </>
+        )}
         {map && <MapMarkers map={map} />}
       </Map>
       {showSearchButton && (

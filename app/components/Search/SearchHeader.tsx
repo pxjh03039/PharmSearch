@@ -34,10 +34,12 @@ export default function SearchHeader({
     handleClick,
     handleFocus,
     setShowAutoComplete,
+    suppressNextAutoComplete,
   } = useSearchInput({ onSearch, searchType, originGps });
 
   useEffect(() => {
     if (initialValue) {
+      suppressNextAutoComplete();
       setInput(initialValue);
     }
   }, [initialValue]);

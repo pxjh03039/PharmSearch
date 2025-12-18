@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useSearchKeyword } from "./useSearchKeyword";
@@ -12,11 +12,7 @@ type Props = {
   originGps?: LatLng | null;
 };
 
-export const useSearchInput = ({
-  onSearch,
-  searchType = "keyword",
-  originGps,
-}: Props) => {
+export const useSearchInput = ({ onSearch, searchType = "keyword", originGps }: Props) => {
   const { myGps } = useLocationStore();
   const [input, setInput] = useState("");
   const [query, setQuery] = useState("");
@@ -24,20 +20,19 @@ export const useSearchInput = ({
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isSelectingRef = useRef(false);
-  const shouldSearchRef = useRef(false); // 검색 실행 여부 플래그
+  const shouldSearchRef = useRef(false);
+  const suppressAutoCompleteRef = useRef(false);
 
-  const { data: keywordList } = useSearchKeyword(
-    searchType === "keyword" ? query : "",
-    myGps
-  );
+  const { data: keywordList } = useSearchKeyword(searchType === "keyword" ? query : "", myGps);
 
-  const pharmacyGps = searchType === "pharmacy" ? originGps || myGps : null;
+  // 약국 검색은 출발지가 지정된 이후에만 수행
+  const pharmacyGps =
+    searchType === "pharmacy" && originGps ? originGps : null;
   const { data: pharmacyList } = useSearchPharmacies(pharmacyGps);
 
   const queryList = searchType === "keyword" ? keywordList : pharmacyList;
 
   useEffect(() => {
-    // Enter로 검색했을 때만(키워드 검색) 첫 결과를 선택
     if (searchType !== "keyword") return;
     if (!shouldSearchRef.current) return;
     if (!query || !queryList) return;
@@ -47,7 +42,6 @@ export const useSearchInput = ({
   }, [searchType, queryList, query, onSearch]);
 
   useEffect(() => {
-    // 자동완성 호출
     if (isSelectingRef.current) {
       isSelectingRef.current = false;
       return;
@@ -58,6 +52,12 @@ export const useSearchInput = ({
     }
 
     if (searchType === "pharmacy") {
+      return;
+    }
+
+    if (suppressAutoCompleteRef.current) {
+      suppressAutoCompleteRef.current = false;
+      setShowAutoComplete(false);
       return;
     }
 
@@ -81,6 +81,7 @@ export const useSearchInput = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    suppressAutoCompleteRef.current = false;
     setInput(e.target.value);
   };
 
@@ -90,10 +91,9 @@ export const useSearchInput = ({
     clearDebounceTimer();
     setShowAutoComplete(false);
 
-    // 약국 리스트(pharmacy)는 키워드 검색이 아니라 리스트 선택 방식이므로 Enter 동작은 생략
     if (searchType === "pharmacy") return;
 
-    shouldSearchRef.current = true; // 검색 실행 플래그 설정
+    shouldSearchRef.current = true;
     setQuery(input.trim());
   };
 
@@ -108,9 +108,15 @@ export const useSearchInput = ({
   };
 
   const handleFocus = () => {
+    if (suppressAutoCompleteRef.current) return;
+    if (searchType === "pharmacy" && !originGps) return;
     if (searchType === "pharmacy" || input.trim()) {
       setShowAutoComplete(true);
     }
+  };
+
+  const suppressNextAutoComplete = () => {
+    suppressAutoCompleteRef.current = true;
   };
 
   const hasQueryList = showAutoComplete && queryList && queryList.length > 0;
@@ -125,5 +131,6 @@ export const useSearchInput = ({
     handleKeyDown,
     handleClick,
     handleFocus,
+    suppressNextAutoComplete,
   };
 };

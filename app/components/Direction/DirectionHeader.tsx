@@ -42,13 +42,13 @@ export default function DirectionHeader({
           initialValue={destinationText}
         />
       </div>
-      <button
+      {/* <button
         className="search-button"
         onClick={onSearchClick}
         disabled={!canSearch}
       >
         검색
-      </button>
+      </button> */}
     </>
   );
 }
