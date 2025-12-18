@@ -8,6 +8,7 @@ import { useSession, signIn } from "next-auth/react";
 import Logout from "../Auth/Logout";
 import { useModalStore } from "@/stores/useModalStore";
 import { LogIn, LogOut } from "lucide-react";
+import { useIsMobile } from "@/app/common/hooks/useIsMobile";
 
 const TABS = [
   { href: "/search", label: "검색" },
@@ -21,6 +22,7 @@ export default function SideNav() {
   const { openSidebar } = useSidebarStore();
   const { openModal, closeModal } = useModalStore();
   const { data: session } = useSession();
+  const isMobile = useIsMobile();
 
   const handleLogoutClick = () => {
     openModal(<Logout onClose={closeModal} />);
@@ -31,8 +33,8 @@ export default function SideNav() {
   };
 
   return (
-    <div className="nav_container">
-      <div className="navigation">
+    <div className={`nav_container ${isMobile ? "nav_container-mobile" : ""}`}>
+      <div className={`navigation ${isMobile ? "navigation-mobile" : ""}`}>
         {TABS.map((t) => {
           const active = pathname.startsWith(t.href);
 
@@ -40,7 +42,9 @@ export default function SideNav() {
             <Link
               key={t.href}
               href={t.href}
-              className={`navigation_item ${active ? "active" : ""}`}
+              className={`navigation_item ${active ? "active" : ""} ${
+                isMobile ? "navigation_item-mobile" : ""
+              }`}
               onClick={openSidebar}
             >
               {t.label}
@@ -48,11 +52,21 @@ export default function SideNav() {
           );
         })}
         {session ? (
-          <button className="navigation-logout" onClick={handleLogoutClick}>
+          <button
+            className={`navigation-logout ${
+              isMobile ? "navigation-auth-mobile" : ""
+            }`}
+            onClick={handleLogoutClick}
+          >
             <LogOut className="logout-icon" color="white" />
           </button>
         ) : (
-          <button className="navigation-login" onClick={handleLoginClick}>
+          <button
+            className={`navigation-login ${
+              isMobile ? "navigation-auth-mobile" : ""
+            }`}
+            onClick={handleLoginClick}
+          >
             <LogIn className="login-icon" color="white" />
           </button>
         )}

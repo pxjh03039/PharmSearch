@@ -17,6 +17,23 @@
   align-items: center;
 }
 
+.nav_container-mobile {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  border-radius: 12px 12px 0 0;
+  z-index: 20; /* keep below mobile sidebar sheet */
+}
+
+.navigation-mobile {
+  flex-direction: row;
+  height: 100%;
+  justify-content: space-around;
+  gap: 6px;
+}
+
 .navigation_item {
   display: flex;
   justify-content: center;
@@ -26,6 +43,11 @@
   height: 60px;
   color: #fff;
   font-size: 20px;
+}
+
+.navigation_item-mobile {
+  height: 100%;
+  font-size: 16px;
 }
 
 .navigation_item:hover {
@@ -54,6 +76,11 @@
 .login-icon {
   width: 24px;
   height: 24px;
+}
+
+.navigation-auth-mobile {
+  margin: 0;
+  padding: 0 8px;
 }
 
 .navigation-login:hover,
