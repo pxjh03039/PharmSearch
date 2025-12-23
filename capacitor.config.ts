@@ -5,8 +5,9 @@ const config: CapacitorConfig = {
   appName: "팜서치",
   webDir: "public",
   server: {
-    url: "https://pharm-search.vercel.app/", // ✅ 배포된 Next 서버 주소
-    cleartext: false, // https면 false
+    // Hosted Next.js URL (only needed for live reload with a remote server)
+    url: "https://pharm-search.vercel.app/",
+    cleartext: false,
   },
 };
 

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">pharm-search</string>
-    <string name="title_activity_main">pharm-search</string>
+    <string name="app_name">팜서치</string>
+    <string name="title_activity_main">팜서치</string>
     <string name="package_name">com.pharmsearch</string>
     <string name="custom_url_scheme">com.pharmsearch</string>
 </resources>
