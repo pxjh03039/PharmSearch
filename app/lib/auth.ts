@@ -11,6 +11,11 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.KAKAO_CLIENT_ID!,
       clientSecret: process.env.KAKAO_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: "profile_nickname account_email",
+        },
+      },
       profile(profile) {
         return {
           id: String(profile.id),
@@ -30,6 +35,15 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
       return true;
+    },
+  },
+  debug: process.env.NODE_ENV !== "production",
+  logger: {
+    error(code, metadata) {
+      console.error("NextAuth error:", code, metadata);
+    },
+    warn(code) {
+      console.warn("NextAuth warning:", code);
     },
   },
 };
